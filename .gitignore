@@ -1,0 +1,41 @@
+# Python and local development
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.DS_Store
+.idea/
+.vscode/
+
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+token*.json
+
+# Public raw archives are downloaded and checksum-verified on demand.
+data/raw/
+
+# Reproducible large outputs; keep small summaries and example ledgers.
+results/results.json
+results/all_runs.csv
+results/report.html
+results/*.png
+results/*.jpg
+results/*.jpeg
+results/*.webp
+results/*.pdf
+
+# Personal learning plans and generated diagnostic working files.
+research_upgrade/
+
+# Keep derived public-data summaries versionable. No blanket CSV/JSON rule.
+real_data_results/minute_features.csv

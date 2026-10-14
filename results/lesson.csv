@@ -1,0 +1,6 @@
+﻿step,mid_price,next_mid,customer_side,limit_price,informed,bid,ask,clipped,cash,inventory,filled,quantity,execution_price,fee,reason,equity,pnl,edge,inventory_pnl,net_change
+1,100.0,100.0,buy,100.9,False,98.8,100.8,False,1100.8,1,True,-1,100.8,0.0,filled,1200.8,0.7999999999999545,0.7999999999999972,0.0,0.7999999999999972
+2,100.0,100.0,sell,99.1,False,98.9,100.9,False,1100.8,1,False,0,,0.0,price_not_accepted,1200.8,0.7999999999999545,0.0,0.0,0.0
+3,100.0,100.0,sell,98.8,False,98.9,100.9,False,1001.9,2,True,1,98.9,0.0,filled,1201.9,1.900000000000091,1.0999999999999943,0.0,1.0999999999999943
+4,100.0,97.0,,,False,98.8,100.8,False,1001.9,2,False,0,,0.0,no_customer,1195.9,-4.099999999999909,0.0,-6.0,-6.0
+5,97.0,97.0,buy,97.9,False,95.8,97.8,False,1099.7,1,True,-1,97.8,0.0,filled,1196.7,-3.2999999999999545,0.7999999999999972,0.0,0.7999999999999972
