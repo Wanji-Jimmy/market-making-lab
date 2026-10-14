@@ -4,7 +4,7 @@
 
 Can inventory-aware quoting reduce losses—and why can a dealer still lose money after reducing inventory? This project separates transaction cash flows from inventory revaluation, compares two quoting rules on identical market paths, and tests how the answer changes under directional flow, jumps, informed customers, and higher costs.
 
-[中文学习说明](README.zh-CN.md) · [Methodology](docs/METHODOLOGY.md) · [Real-data findings](docs/EMPIRICAL_RESULTS.md) · [Simulation results](results/研究结果.md)
+[中文学习说明](README.zh-CN.md) · [Methodology](docs/METHODOLOGY.md) · [Minute-level findings](docs/EMPIRICAL_RESULTS.md) · [Individual-trade diagnostic](docs/TICK_DATA_DIAGNOSTIC.md) · [Simulation results](results/研究结果.md)
 
 The simulator is an educational research baseline. Its prices and customer behavior are synthetic, and its parameters are not calibrated to a market. A separate public-data diagnostic investigates observed trade flow; it does not turn the simulator into a historical execution backtest.
 
@@ -18,6 +18,7 @@ The simulator is an educational research baseline. Its prices and customer behav
 | One-step P&L attribution and replay of the original main experiment | Implemented; 6,000 main strategy runs reproduced |
 | Offline interactive report and five-event teaching ledger | Implemented; generated locally |
 | Public ETHUSDT trade-flow diagnostic | Implemented; 3,838,071 aggregate-trade records checked and analysed |
+| Unaggregated ETHUSDT trade-response diagnostic | Implemented; 4,011,776 individual trades, 1/5/30-second responses and format reconciliation |
 | Adaptive spread based on historical execution quality | Planned; not implemented |
 | Participation controls, hidden-regime experiments, and held-out policy evaluation | Planned; not implemented |
 
@@ -119,6 +120,28 @@ For the strongest aggressive-buying group (`imbalance > 0.5`, 525 minutes), the 
 
 After downloading once, `python3 real_data.py --offline` reproduces the analysis from the checksum-verified cache. The minute-level CSV is generated locally; compact group summaries and the source manifest are included in the repository.
 
+### Individual executions and short-horizon responses
+
+A second module uses the official unaggregated `trades` archive for **2025-09-01 UTC**. It reads **4,011,776 individual executions** and reconciles them against that day's **1,378,465 aggregate records**. All **15,853** daily and minute-level comparisons passed within the declared tolerances. Both source archive checksums passed; raw trade IDs were continuous, without duplicates or timestamp reversals.
+
+```bash
+python3 tick_data.py
+# Cached reproduction after the first download:
+python3 tick_data.py --offline
+```
+
+The diagnostic measures aggressive-side signed trade-price responses at fixed 1, 5 and 30 second targets. It uses the first execution at or after each target and rejects matches more than one second late. Positive means the price moved in the aggressor's direction.
+
+| Target horizon | Retained events | Mean signed response (bp) | Mean lookup delay (ms) |
+| --- | ---: | ---: | ---: |
+| 1 second | 3,821,339 | +1.0011 | 221.1 |
+| 5 seconds | 3,784,136 | +1.3611 | 234.1 |
+| 30 seconds | 3,767,921 | +1.1422 | 242.4 |
+
+These are event-weighted descriptive responses at the target plus lookup delay. They are not strategy returns, exact-horizon midquote markouts or evidence of a causal effect. Individual executions can be split parts of one order, and response windows overlap. The earlier minute results for this date were already inspected; the extension is exploratory, not a held-out validation.
+
+See the [method and complete interpretation](docs/TICK_DATA_DIAGNOSTIC.md), [buy/sell results and exclusions](tick_data_results/response_summary.csv), [manifest and reconciliation summary](tick_data_results/summary.json), and [Chinese report](tick_data_results/研究结果.md). The full 15,853-row reconciliation CSV is generated locally; compact summaries are tracked.
+
 ## Limitations that matter
 
 - Quotes are constrained to straddle the reference price. Execution edge relative to that price is therefore nonnegative by construction; ordinary customer willingness supplies a modeled opportunity to earn spread.
@@ -138,6 +161,8 @@ After downloading once, `python3 real_data.py --offline` reproduces the analysis
 | `build_report.py` | Offline HTML report from saved simulation results |
 | `test_simulator.py` | Accounting, limits, liquidation, and reproducibility tests |
 | `real_data.py` | Public trade archive ingestion and descriptive minute-level analysis |
+| `tick_data.py` | Individual-trade validation, signed forward responses and aggregate-format reconciliation |
+| `test_real_data.py` / `test_tick_data.py` | Offline schema, timestamp, direction, matching and reconciliation tests |
 | `.github/workflows/tests.yml` | Offline tests and a small simulation run on Python 3.10 and 3.12 |
 
 Chinese comments and the teaching report are retained while the explanation is developed. The English overview records what has actually been implemented and keeps future research separate.

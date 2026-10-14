@@ -68,6 +68,14 @@ At the end of minute t, this feature is observable. The diagnostic relates it to
 
 Trade prices are not bid/ask midpoints. A relationship between imbalance and future trade-price returns is not a strategy return, a midpoint markout, a proof of informed trading or a guarantee that a hypothetical quote would fill. Bid-ask bounce, volatility, aggregation and sample choice can influence the result. No real-data strategy is fitted or executed by this diagnostic.
 
+## Individual-trade extension
+
+A separate diagnostic reads the unaggregated ETHUSDT `trades` archive for 2025-09-01 and reconciles it against that day's `aggTrades` archive. The day was selected as the first existing sample date, whose minute-level findings were already inspected; it is not a held-out test.
+
+For each aggressive trade, the diagnostic measures its signed trade-price response after fixed 1, 5 and 30 second horizons. The matched price is the first trade at or after the target, with a maximum one-second lookup delay and no cross-day matching. Retained sample counts, excluded observations and actual delays accompany the results. A positive response means the subsequent trade-price move favored the aggressor's direction; it is not a dealer P&L or a midpoint markout.
+
+The complete [individual-trade method](TICK_DATA_DIAGNOSTIC.md) states the weighting, source schema, checks and interpretation. Split orders and overlapping response windows make observations dependent. No confidence interval based on treating all executions as independent is used.
+
 ## Next research milestone
 
 The next study is to test whether a history-only quote adjustment can improve the trade-off between execution quality, profit and participation, beyond inventory control. The intended controls include fixed wider quotes and random reductions in quoting, with parameters frozen before evaluation. Hidden-regime signals, four-policy ablations and frozen holdout performance are not implemented in this release.

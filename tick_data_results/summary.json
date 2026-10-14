@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "symbol": "ETHUSDT",
+  "fixed_date_utc": "2025-09-01",
+  "sample_selection": "First day of existing sample selected and horizons fixed before this tick diagnostic; minute-level results for this date were previously inspected. Exploratory, NOT held-out.",
+  "generated_at_utc": "2026-10-14T22:51:34.616270+00:00",
+  "source_sha256": {
+    "tick_data.py": "5ebedca1e2842c356253ac8a0e79e91a4128b998962820062c29270792294300",
+    "real_data.py": "2e5f9e1e73cadfac6b87c2f8dd49bf584bd8cf3b33172c25d0531536801f0bf7"
+  },
+  "method": {
+    "horizons_seconds": [
+      1,
+      5,
+      30
+    ],
+    "max_lookup_delay_us": 1000000,
+    "future_price": "First trade at or after event timestamp + horizon; first row/ID on time ties",
+    "response": "aggressor_sign * 10000 * (future_trade_price / event_trade_price - 1)",
+    "aggressor_sign": {
+      "buy": 1,
+      "sell": -1
+    },
+    "primary_weighting": "each unaggregated trade equally",
+    "secondary_weighting": "event ETH quantity",
+    "midpoint_markout": false,
+    "own_fill_model": null,
+    "trading_pnl": null,
+    "quote_product_abs_tolerance": 1e-08,
+    "quote_product_rel_tolerance": 1e-10
+  },
+  "sources": [
+    {
+      "date": "2025-09-01",
+      "dataset": "trades",
+      "url": "https://data.binance.vision/data/spot/daily/trades/ETHUSDT/ETHUSDT-trades-2025-09-01.zip",
+      "checksum_url": "https://data.binance.vision/data/spot/daily/trades/ETHUSDT/ETHUSDT-trades-2025-09-01.zip.CHECKSUM",
+      "fetched_at_utc": "2026-10-14T22:49:51.245181+00:00",
+      "sha256": "6943170f53e7955dbdc29c0d0fb50875dc01dff6adf66e982ee714b9b6b9ca7f",
+      "compressed_bytes": 34767392
+    },
+    {
+      "date": "2025-09-01",
+      "url": "https://data.binance.vision/data/spot/daily/aggTrades/ETHUSDT/ETHUSDT-aggTrades-2025-09-01.zip",
+      "checksum_url": "https://data.binance.vision/data/spot/daily/aggTrades/ETHUSDT/ETHUSDT-aggTrades-2025-09-01.zip.CHECKSUM",
+      "fetched_at_utc": "2026-10-14T22:40:18.516656+00:00",
+      "sha256": "f77f78ca729acbfccc3996af6a8f32c869e236075edac3e3cda2c752bcc09ae2",
+      "compressed_bytes": 20598825
+    }
+  ],
+  "tick_quality": {
+    "date": "2025-09-01",
+    "timestamp_unit": "microseconds",
+    "rows": 4011776,
+    "first_trade_id": 2803461704,
+    "last_trade_id": 2807473479,
+    "missing_trade_ids": 0,
+    "id_gap_events": 0,
+    "duplicate_ids": 0,
+    "out_of_order_ids": 0,
+    "out_of_order_timestamps": 0,
+    "adjacent_equal_timestamps": 3408595,
+    "active_minutes": 1440,
+    "missing_minutes": 0,
+    "first_timestamp_us": 1756684800316508,
+    "last_timestamp_us": 1756771199391939,
+    "quote_product_max_absolute_error_usdt": 2.3283064365386963e-10,
+    "totals": {
+      "trade_count": 4011776,
+      "buy_trade_count": 1921265,
+      "sell_trade_count": 2090511,
+      "quantity_eth": 513830.0394976719,
+      "buy_quantity_eth": 246147.26539913422,
+      "sell_quantity_eth": 267682.77409904543,
+      "notional_usdt": 2244610986.865861,
+      "buy_notional_usdt": 1075592499.534862,
+      "sell_notional_usdt": 1169018487.331397,
+      "first_price": 4391.83,
+      "last_price": 4314.5
+    }
+  },
+  "aggregate_quality": {
+    "aggregate_rows": 1378465,
+    "missing_aggregate_ids": 0,
+    "underlying_id_gaps": 0,
+    "first_underlying_trade_id": 2803461704,
+    "last_underlying_trade_id": 2807473479,
+    "totals": {
+      "trade_count": 4011776,
+      "buy_trade_count": 1921265,
+      "sell_trade_count": 2090511,
+      "quantity_eth": 513830.0394993711,
+      "buy_quantity_eth": 246147.26539975894,
+      "sell_quantity_eth": 267682.77409980336,
+      "notional_usdt": 2244610986.866215,
+      "buy_notional_usdt": 1075592499.534857,
+      "sell_notional_usdt": 1169018487.3313453,
+      "first_price": 4391.83,
+      "last_price": 4314.5
+    }
+  },
+  "responses": [
+    {
+      "horizon_seconds": 1,
+      "scope": "all",
+      "events": 4011776,
+      "retained": 3821339,
+      "excluded_outside_utc_day": 1,
+      "excluded_no_future_trade": 16,
+      "excluded_lookup_delay_exceeded": 190420,
+      "event_weighted_mean_response_bps": 1.0011242817258827,
+      "eth_volume_weighted_mean_response_bps": 1.1272021022649505,
+      "positive_count": 3188438,
+      "zero_count": 173306,
+      "positive_fraction": 0.8343771646535416,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 221065.27391785968,
+      "actual_lookup_delay_max_us": 999997
+    },
+    {
+      "horizon_seconds": 1,
+      "scope": "buy",
+      "events": 1921265,
+      "retained": 1826724,
+      "excluded_outside_utc_day": 0,
+      "excluded_no_future_trade": 16,
+      "excluded_lookup_delay_exceeded": 94525,
+      "event_weighted_mean_response_bps": 0.9553678343079349,
+      "eth_volume_weighted_mean_response_bps": 1.0607896125032195,
+      "positive_count": 1524912,
+      "zero_count": 81567,
+      "positive_fraction": 0.8347796383033234,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 223477.05863830552,
+      "actual_lookup_delay_max_us": 999971
+    },
+    {
+      "horizon_seconds": 1,
+      "scope": "sell",
+      "events": 2090511,
+      "retained": 1994615,
+      "excluded_outside_utc_day": 1,
+      "excluded_no_future_trade": 0,
+      "excluded_lookup_delay_exceeded": 95895,
+      "event_weighted_mean_response_bps": 1.043029311345118,
+      "eth_volume_weighted_mean_response_bps": 1.1884110714242402,
+      "positive_count": 1663526,
+      "zero_count": 91739,
+      "positive_fraction": 0.8340085680695272,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 218856.4942628026,
+      "actual_lookup_delay_max_us": 999997
+    },
+    {
+      "horizon_seconds": 5,
+      "scope": "all",
+      "events": 4011776,
+      "retained": 3784136,
+      "excluded_outside_utc_day": 151,
+      "excluded_no_future_trade": 2,
+      "excluded_lookup_delay_exceeded": 227487,
+      "event_weighted_mean_response_bps": 1.361115867301018,
+      "eth_volume_weighted_mean_response_bps": 1.3315310599657515,
+      "positive_count": 2709598,
+      "zero_count": 50580,
+      "positive_fraction": 0.7160413896329307,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 234092.97187495374,
+      "actual_lookup_delay_max_us": 999998
+    },
+    {
+      "horizon_seconds": 5,
+      "scope": "buy",
+      "events": 1921265,
+      "retained": 1811221,
+      "excluded_outside_utc_day": 135,
+      "excluded_no_future_trade": 1,
+      "excluded_lookup_delay_exceeded": 109908,
+      "event_weighted_mean_response_bps": 1.297569742639585,
+      "eth_volume_weighted_mean_response_bps": 1.200517116396805,
+      "positive_count": 1306092,
+      "zero_count": 25232,
+      "positive_fraction": 0.7211113387046638,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 238959.1599865505,
+      "actual_lookup_delay_max_us": 999990
+    },
+    {
+      "horizon_seconds": 5,
+      "scope": "sell",
+      "events": 2090511,
+      "retained": 1972915,
+      "excluded_outside_utc_day": 16,
+      "excluded_no_future_trade": 1,
+      "excluded_lookup_delay_exceeded": 117579,
+      "event_weighted_mean_response_bps": 1.4194539484924658,
+      "eth_volume_weighted_mean_response_bps": 1.4520527389688116,
+      "positive_count": 1403506,
+      "zero_count": 25348,
+      "positive_fraction": 0.71138695787705,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 229625.60146230325,
+      "actual_lookup_delay_max_us": 999998
+    },
+    {
+      "horizon_seconds": 30,
+      "scope": "all",
+      "events": 4011776,
+      "retained": 3767921,
+      "excluded_outside_utc_day": 561,
+      "excluded_no_future_trade": 0,
+      "excluded_lookup_delay_exceeded": 243294,
+      "event_weighted_mean_response_bps": 1.1422421919875667,
+      "eth_volume_weighted_mean_response_bps": 1.295046677254663,
+      "positive_count": 2174553,
+      "zero_count": 8700,
+      "positive_fraction": 0.5771227687629332,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 242354.42376127312,
+      "actual_lookup_delay_max_us": 999971
+    },
+    {
+      "horizon_seconds": 30,
+      "scope": "buy",
+      "events": 1921265,
+      "retained": 1801382,
+      "excluded_outside_utc_day": 224,
+      "excluded_no_future_trade": 0,
+      "excluded_lookup_delay_exceeded": 119659,
+      "event_weighted_mean_response_bps": 1.4072354684076427,
+      "eth_volume_weighted_mean_response_bps": 1.782694277218459,
+      "positive_count": 1059583,
+      "zero_count": 4198,
+      "positive_fraction": 0.5882056110253128,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 243842.3455718998,
+      "actual_lookup_delay_max_us": 999971
+    },
+    {
+      "horizon_seconds": 30,
+      "scope": "sell",
+      "events": 2090511,
+      "retained": 1966539,
+      "excluded_outside_utc_day": 337,
+      "excluded_no_future_trade": 0,
+      "excluded_lookup_delay_exceeded": 123635,
+      "event_weighted_mean_response_bps": 0.8995040015602033,
+      "eth_volume_weighted_mean_response_bps": 0.8471540569144993,
+      "positive_count": 1114970,
+      "zero_count": 4502,
+      "positive_fraction": 0.5669707033524379,
+      "actual_lookup_delay_min_us": 0,
+      "actual_lookup_delay_mean_us": 240991.4629620872,
+      "actual_lookup_delay_max_us": 999965
+    }
+  ],
+  "reconciliation": {
+    "check_count": 15853,
+    "failed_count": 0,
+    "passed": true,
+    "failures": [],
+    "minute_keys_match": true,
+    "relative_tolerance": 1e-10,
+    "absolute_tolerances": {
+      "quantity": 1e-06,
+      "notional": 0.0001,
+      "price": 1e-08
+    },
+    "count_tolerance": 0,
+    "daily_checks": [
+      {
+        "scope": "day",
+        "field": "trade_count",
+        "trades_value": 4011776,
+        "aggtrades_value": 4011776,
+        "difference": 0,
+        "absolute_tolerance": 0,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "buy_trade_count",
+        "trades_value": 1921265,
+        "aggtrades_value": 1921265,
+        "difference": 0,
+        "absolute_tolerance": 0,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "sell_trade_count",
+        "trades_value": 2090511,
+        "aggtrades_value": 2090511,
+        "difference": 0,
+        "absolute_tolerance": 0,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "quantity_eth",
+        "trades_value": 513830.0394976719,
+        "aggtrades_value": 513830.0394993711,
+        "difference": -1.6991980373859406e-06,
+        "absolute_tolerance": 5.138300394993711e-05,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "buy_quantity_eth",
+        "trades_value": 246147.26539913422,
+        "aggtrades_value": 246147.26539975894,
+        "difference": -6.24713720753789e-07,
+        "absolute_tolerance": 2.4614726539975895e-05,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "sell_quantity_eth",
+        "trades_value": 267682.77409904543,
+        "aggtrades_value": 267682.77409980336,
+        "difference": -7.579219527542591e-07,
+        "absolute_tolerance": 2.6768277409980338e-05,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "notional_usdt",
+        "trades_value": 2244610986.865861,
+        "aggtrades_value": 2244610986.866215,
+        "difference": -0.0003542900085449219,
+        "absolute_tolerance": 0.22446109868662154,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "buy_notional_usdt",
+        "trades_value": 1075592499.534862,
+        "aggtrades_value": 1075592499.534857,
+        "difference": 5.0067901611328125e-06,
+        "absolute_tolerance": 0.1075592499534862,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "sell_notional_usdt",
+        "trades_value": 1169018487.331397,
+        "aggtrades_value": 1169018487.3313453,
+        "difference": 5.173683166503906e-05,
+        "absolute_tolerance": 0.1169018487331397,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "first_price",
+        "trades_value": 4391.83,
+        "aggtrades_value": 4391.83,
+        "difference": 0.0,
+        "absolute_tolerance": 4.39183e-07,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "last_price",
+        "trades_value": 4314.5,
+        "aggtrades_value": 4314.5,
+        "difference": 0.0,
+        "absolute_tolerance": 4.3145e-07,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "first_trade_id",
+        "trades_value": 2803461704,
+        "aggtrades_value": 2803461704,
+        "difference": 0,
+        "absolute_tolerance": 0,
+        "passed": true
+      },
+      {
+        "scope": "day",
+        "field": "last_trade_id",
+        "trades_value": 2807473479,
+        "aggtrades_value": 2807473479,
+        "difference": 0,
+        "absolute_tolerance": 0,
+        "passed": true
+      }
+    ]
+  }
+}

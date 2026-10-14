@@ -39,3 +39,4 @@ research_upgrade/
 
 # Keep derived public-data summaries versionable. No blanket CSV/JSON rule.
 real_data_results/minute_features.csv
+tick_data_results/reconciliation.csv

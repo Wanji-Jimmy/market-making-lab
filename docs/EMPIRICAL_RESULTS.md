@@ -1,5 +1,7 @@
 # Empirical diagnostic: trade flow and subsequent prices
 
+This page covers the three-day **aggregate-trade / minute-level** analysis. The separate [individual-trade diagnostic](TICK_DATA_DIAGNOSTIC.md) uses one day of unaggregated executions, reconciles the two official formats, and examines 1/5/30-second price responses.
+
 Fixed sample: Binance spot ETHUSDT, 2025-09-01, 2025-09-02, 2025-09-03 (UTC). Dates and symbol were chosen before examining outcomes.
 
 Processed **3,838,071 aggregate-trade records** into **4,320 populated minutes** and **4,317 adjacent same-day next-minute outcomes**. An aggregate record may combine multiple individual fills.
