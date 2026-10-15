@@ -1,0 +1,30 @@
+{
+  "frozen_at_utc": "2026-10-15T08:59:36.155589+00:00",
+  "python_version": "3.11.4",
+  "plan_sha256": "9e9bf3938077a4317a738273eeff393fbff1bdb7ee4355f61611175765bdddd3",
+  "model_sha256": "c9c6c57fea440caa860616d6480dc98eebc6396c1bad06d75ebeb341859bac0e",
+  "development_sha256": "a964d463bd002a752a9166ac769ebb893919d6577b4cb709cb4e120973902797",
+  "source_sha256": {
+    "flow_research.py": "56619fc7cf7ae27be86731461b4b203b812ee17abe91cd658ddbf2d7f6ee81d8",
+    "flow_data.py": "474b3fdb0994dcf01dc0669f52ba4b9642b82ece50ac9d870d6fa09c596acfcc",
+    "flow_policy.py": "7799184d4c9f0cc0f4f06c6b74011a41e4fa1ad37f418522675a1c0934878bb0",
+    "real_data.py": "2e5f9e1e73cadfac6b87c2f8dd49bf584bd8cf3b33172c25d0531536801f0bf7",
+    "simulator.py": "726a8abffadcc0951e06e033918142e57dd4b636821ac1e5383c6e6a04fa92d8",
+    "test_flow_research.py": "a215e1772bf19975258e8f8ad08d0f80b2382aff6abb8a9848005e3847747259",
+    "test_flow_data.py": "3ebd4a227bba4139ac654560fd6fac797be6a80067e938c85b65db017d11c279",
+    "test_flow_policy.py": "0a19f866337883613a3815113924af76b53d9bd5031cd4ec871a73691976c496"
+  },
+  "development_archives": {
+    "2025-09-01": "f77f78ca729acbfccc3996af6a8f32c869e236075edac3e3cda2c752bcc09ae2",
+    "2025-09-02": "d89ca99a180342dfcaaa81a91f01568873d005c8561abafbbe9a9196da892530",
+    "2025-09-03": "744a77b9832979386725424cda50719484e3a3c20f3568b8815c8292898ded2d",
+    "2025-09-04": "d8df8f48486b591b8cc6e7aaa402b0040399d7d7dcc5aff763b968a04cc843eb",
+    "2025-09-05": "57ce778b039f7ee9b2f298f86c95c1508f2fa68273a1af6f0a9fe8bb340acb2c"
+  },
+  "test_dates": [
+    "2025-09-06",
+    "2025-09-07",
+    "2025-09-08"
+  ],
+  "notice": "Frozen before first test access. Unchanged reruns reproduce this experiment; they do not create new holdout evidence."
+}

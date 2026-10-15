@@ -40,3 +40,10 @@ research_upgrade/
 # Keep derived public-data summaries versionable. No blanket CSV/JSON rule.
 real_data_results/minute_features.csv
 tick_data_results/reconciliation.csv
+
+# Preserve the first frozen study; local reproductions are independently checked.
+flow_research_results/reproduction.json
+flow_research_results/reproduction_runs.csv
+flow_research_results/reproduction_check.json
+flow_research_results/*trace*.csv
+flow_research_results/*trace*.json
