@@ -1,13 +1,9 @@
-"""五个固定事件的账本示例。运行：python3 lesson.py。"""
-
 from dataclasses import asdict
 
 from simulator import Config, Event, simulate
 
 
 def make_lesson():
-    # 这是已有两股的账户，初始总价值是 1000 + 2 * 100 = 1200。
-    # 教学例子不计手续费、不允许卖空；完整实验使用另一组明确列出的参数。
     config = Config(
         initial_cash=1000.0,
         initial_inventory=2,
@@ -15,8 +11,7 @@ def make_lesson():
         allow_short=False,
     )
 
-    # Event: 步数、当前参考价、下一步参考价、客户方向、客户价格底线。
-    # buy/sell 始终是客户方向；客户 buy 意味着做市商卖出。
+    # Event: 步数、当前参考价、下一步参考价、客户方向、客户限价。
     events = [
         Event(1, 100.0, 100.0, "buy", 100.9),
         Event(2, 100.0, 100.0, "sell", 99.1),

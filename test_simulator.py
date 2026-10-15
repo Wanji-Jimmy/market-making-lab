@@ -1,5 +1,3 @@
-"""账本算术与报价、成交规则的测试。运行：python3 -m unittest test_simulator -v。"""
-
 import copy
 import unittest
 
@@ -180,8 +178,7 @@ class AccountingTests(unittest.TestCase):
         self.assertAlmostEqual(metrics["pnl_mtm"], 10.95)
 
     def test_pnl_decomposition_matches_independent_ledger(self):
-        # Buy at 99, mark at 98; then sell at 99, mark at 103.
-        # Actual cash paid/received cancel: only two fees remain.
+        # Buy and sell at 99: only the two fees remain after closing.
         events = [Event(1, 100, 98, "sell", 99),
                   Event(2, 98, 103, "buy", 99)]
         result = self.run_events(events)

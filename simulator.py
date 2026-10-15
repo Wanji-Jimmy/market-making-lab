@@ -1,5 +1,3 @@
-"""单资产做市模拟：生成价格和客户订单，比较固定价差与库存调整报价。"""
-
 from dataclasses import dataclass
 from decimal import Decimal
 import math
@@ -7,7 +5,6 @@ import random
 
 
 def _number(name, value, minimum=None, maximum=None):
-    """拒绝 NaN、无穷和误传的布尔值，避免错误悄悄进入账本。"""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValueError(f"{name} 必须是有限数值")
     if not math.isfinite(value):
@@ -26,7 +23,7 @@ def _integer(name, value, minimum=None):
 
 
 def _tick(price, tick_size, direction="nearest"):
-    """价格在 tick 网格上；极小容差防止 98.8 / 0.01 的浮点贴边误差。"""
+    # 容差用于处理 tick 边界的浮点误差。
     units = price / tick_size
     if direction == "down":
         units = math.floor(units + 1e-10)
@@ -160,7 +157,6 @@ def _validate_strategy(strategy):
 
 
 def make_quotes(mid_price, inventory, config, strategy):
-    """库存偏多就降低报价中心；限制偏移，使买卖报价始终包围参考价。"""
     _validate_strategy(strategy)
     _validate_inventory(inventory, config)
     _number("mid_price", mid_price)
@@ -168,6 +164,7 @@ def make_quotes(mid_price, inventory, config, strategy):
         raise ValueError("mid_price 必须大于 tick_size 才能提供正的买价")
     k = config.skew_strength if strategy == "inventory" else 0.0
     desired_shift = -k * inventory
+    # 限幅避免报价跨过参考价；bid 向下、ask 向上取整。
     max_shift = config.half_spread - config.tick_size
     shift = max(-max_shift, min(max_shift, desired_shift))
     centre = mid_price + shift
@@ -179,7 +176,6 @@ def make_quotes(mid_price, inventory, config, strategy):
 
 
 def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
-    """客户买对应做市商卖；按做市商报价成交，每次一股，手续费只收成交。"""
     _number("cash", cash, 0)
     _validate_inventory(inventory, config)
     _validate_customer(customer_side, limit_price)
@@ -188,7 +184,7 @@ def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
     if customer_side is None:
         return result
 
-    # quantity 按做市商方向：买入 +1，卖出 -1。
+    # customer_side 是客户方向；quantity 按做市商买入 +1、卖出 -1。
     quantity = -1 if customer_side == "buy" else 1
     price = quote.ask if quantity == -1 else quote.bid
     accepted = price <= limit_price if quantity == -1 else price >= limit_price
@@ -212,11 +208,6 @@ def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
 
 
 def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
-    """先生成完整外生环境；复用事件列表即可让两个策略面对同一市场。
-
-    informed 客户使用下一次价格变化加噪声构造，是人为的逆向选择压力场景。
-    此信息留在环境里，不传给 make_quotes；不能称为真实订单流模型。
-    """
     _integer("seed", seed)
     _number("initial_mid", initial_mid)
     _number("tick_size", tick_size)
@@ -235,6 +226,7 @@ def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
         if rng.random() < scenario.arrival_probability:
             informed = rng.random() < scenario.informed_fraction
             if informed:
+                # 知情客户可读取下一步价格；报价函数不能读取。
                 signal = next_mid - mid + rng.gauss(0, 0.1)
                 side = "buy" if signal >= 0 else "sell"
                 limit_price = max(tick_size, mid + signal)
@@ -254,7 +246,6 @@ def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
 
 
 def simulate(events, config, strategy, record=True):
-    """逐步记账；同时报告期末按参考价估值和支付清仓成本后的结果。"""
     _validate_strategy(strategy)
     if not isinstance(record, bool):
         raise ValueError("record 必须是布尔值")
@@ -286,7 +277,7 @@ def simulate(events, config, strategy, record=True):
                               event.limit_price, config)
         cash, inventory = trade["cash"], trade["inventory"]
 
-        # 顺序很重要：先成交，再由成交后的库存承担下一次价格变化。
+        # 先成交，再按成交后的库存计算价格变动损益。
         edge = 0.0
         if trade["filled"]:
             edge = trade["quantity"] * (event.mid_price - trade["execution_price"])
@@ -319,7 +310,7 @@ def simulate(events, config, strategy, record=True):
             ))
         previous_event = event
 
-    # 强制平仓按每股固定滑价加手续费；多头卖出、空头买回都要支付。
+    # 期末多头卖出、空头买回，都计入平仓成本。
     liquidation_cost = abs(inventory) * (config.liquidation_half_spread + config.fee_per_trade)
     final_cash = cash + inventory * events[-1].next_mid - liquidation_cost
     metrics = dict(
