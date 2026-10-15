@@ -1,6 +1,8 @@
 import copy
 import unittest
+from unittest.mock import patch
 
+from experiment import CASES, run_experiment
 from simulator import (
     Config, Event, Quote, Scenario, execute_trade, generate_market,
     make_quotes, simulate,
@@ -259,6 +261,26 @@ class MarketAndValidationTests(unittest.TestCase):
                 self.assertEqual(result["metrics"]["final_inventory"], -3)
                 self.assertGreater(result["metrics"]["blocked_inventory"], 0)
 
+    def test_limit_counts_only_accepted_orders_that_cannot_be_filled(self):
+        events = [Event(1, 100, 100, "sell", 98),
+                  Event(2, 100, 100, "sell", 101),
+                  Event(3, 100, 100, "sell", 98),
+                  Event(4, 100, 100, "buy", 102)]
+        for strategy in ("fixed", "inventory"):
+            with self.subTest(strategy=strategy):
+                result = simulate(events, Config(inventory_limit=1), strategy)
+                self.assertEqual([row["reason"] for row in result["trace"]],
+                                 ["filled", "price_not_accepted",
+                                  "inventory_limit", "filled"])
+                metrics = result["metrics"]
+                self.assertEqual(metrics["trades"], 2)
+                self.assertEqual(metrics["blocked_inventory"], 1)
+                self.assertEqual(metrics["final_inventory"], 0)
+                self.assertAlmostEqual(metrics["total_fees"], 0.1)
+                self.assertAlmostEqual(metrics["pnl_liquidated"],
+                                       metrics["spread_capture"] + metrics["inventory_pnl"]
+                                       - metrics["total_fees"] - metrics["liquidation_cost"])
+
     def test_invalid_configuration_is_rejected(self):
         cases = [dict(fee_per_trade=-1), dict(tick_size=0),
                  dict(inventory_limit=0), dict(half_spread=0),
@@ -283,6 +305,28 @@ class MarketAndValidationTests(unittest.TestCase):
                   Event(2, 102, 103, "buy", 90)]
         with self.assertRaises(ValueError):
             simulate(events, Config(), "fixed")
+
+
+class ExperimentTests(unittest.TestCase):
+    def test_all_limits_and_rules_reuse_each_market_path(self):
+        with patch("experiment.generate_market", wraps=generate_market) as market, \
+             patch("experiment.simulate", wraps=simulate) as simulation:
+            rows = run_experiment(runs=2, steps=8, seed_start=17)
+        self.assertEqual(market.call_count, len(CASES) * 2)
+        self.assertEqual(len(rows), len(CASES) * 6)
+        calls = simulation.call_args_list
+        expected = {(limit, strategy) for limit in (5, 10, 20)
+                    for strategy in ("fixed", "inventory")}
+        for offset in range(0, len(calls), 6):
+            group = calls[offset:offset + 6]
+            self.assertEqual({(call.args[1].inventory_limit, call.args[2])
+                              for call in group}, expected)
+            self.assertTrue(all(call.args[0] is group[0].args[0] for call in group))
+        for row in rows:
+            self.assertAlmostEqual(row["mean_pnl"],
+                                   row["mean_spread_capture"] + row["mean_inventory_pnl"]
+                                   - row["mean_total_fees"] - row["mean_liquidation_cost"],
+                                   places=5)
 
 
 if __name__ == "__main__":
