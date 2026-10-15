@@ -1,6 +1,6 @@
 # Methodology and evidence boundaries
 
-This project has two separate evidence layers: a controlled synthetic market and an empirical diagnostic of public trades. Empirical observations are not substituted for simulated fills or presented as realized trading profit.
+This project contains an uncalibrated controlled simulation, descriptive diagnostics of public trades, and a forecast-to-quote study with a frozen date split. In the last layer, forecasts are evaluated against observed trade prices, while executions still come from an explicitly hypothetical customer model. Observed trades are not evidence of the dealer's fills or realized trading profit.
 
 ## Synthetic market
 
@@ -50,7 +50,7 @@ The main run uses six predefined scenarios, 500 seeds per scenario and 300 event
 
 The comparison reports mean P&L, loss frequency, mean P&L in the worst 5% of paths, inventory, fees and trade count. A paired comparison computes policy B minus A on each shared path. Its interval describes simulation sampling uncertainty conditional on the model, not uncertainty about the adequacy of the model itself.
 
-The existing runs have already been inspected and are exploratory evidence. Future signal selection requires newly declared development, validation and frozen test sets. It would be incorrect to relabel the existing seeds as unseen test data.
+These original simulation runs have already been inspected and remain exploratory evidence. Their random seeds are not unseen empirical test data. The later five-second study below has its own declared chronological split, freeze and first-access record; it does not change the evidence status of the original experiment.
 
 ## Public trade-data diagnostic
 
@@ -76,9 +76,59 @@ For each aggressive trade, the diagnostic measures its signed trade-price respon
 
 The complete [individual-trade method](TICK_DATA_DIAGNOSTIC.md) states the weighting, source schema, checks and interpretation. Split orders and overlapping response windows make observations dependent. No confidence interval based on treating all executions as independent is used.
 
-## Next research milestone
+## Five-second forecast-to-quote study
 
-The next study is to test whether a history-only quote adjustment can improve the trade-off between execution quality, profit and participation, beyond inventory control. The intended controls include fixed wider quotes and random reductions in quoting, with parameters frozen before evaluation. Hidden-regime signals, four-policy ablations and frozen holdout performance are not implemented in this release.
+The implemented design is declared in [FLOW_SIGNAL_PLAN.json](../research/FLOW_SIGNAL_PLAN.json). The [journal](../research/RESEARCH_JOURNAL.md) records chronology, corrections and access; the [result report](../flow_research_results/report.md) records the actual evaluation. The [Chinese guide](FLOW_RESEARCH_GUIDE.zh-CN.md) gives a worked quote example. The method does not assume a positive result.
+
+### Clock, information and target
+
+At decision boundary `t`, signed ETH trade volume from `[t-5s,t)` gives imbalance `(buy-sell)/(buy+sell)`. The reference is the last executed trade price strictly before `t`, not an observed midquote. A trade timestamped exactly `t` belongs to the following bucket. The target is `10000 * (last_price_in_[t,t+5s) / reference - 1)`.
+
+Only adjacent nonempty buckets within one UTC day create a labeled row. No gap is forward-filled. Current and target reference-price ages, empty buckets and excluded rows are reported; this module applies no extra one-second future-price cutoff. Labeled-row inclusion itself conditions on a populated next bucket, an outcome not known at decision time. Forecast results therefore describe the retained sample, not every clock interval.
+
+The next bucket's first observed aggressor side is stored separately as future environment information for the hypothetical replay. The forecasting model sees only the preceding bucket's imbalance, and the quote function receives only current reference, inventory, past imbalance and frozen coefficients. Neither future side, next price nor customer willingness enters the quote.
+
+### Chronological fitting and freeze
+
+Training uses September 1–3, 2025; those dates were already explored in the earlier diagnostics. Validation uses September 4–5, without choosing a model or hyperparameter from its outcomes. The declared final test is September 6–8. A single OLS model with intercept is fitted only on the training dates. Training-mean and zero-return forecasts provide separate constant baselines. The raw model and its ±2 bp clipped forecast are both evaluated.
+
+Before accessing the test data, the pipeline stores the model, plan hash, computational-source hashes, development metrics and data archive hashes. The first test stage verifies the freeze before downloading and records the start of access, including failed attempts. A correction after opening test data must be documented; the same dates cannot be relabeled untouched. This is a prospective evaluation within the project, not a formally registered study or evidence of general validity across markets.
+
+MSE is measured in bp squared, MAE in bp. Directional accuracy excludes exactly zero realized changes; a zero prediction on a nonzero target counts incorrect and reduces directional coverage. Pooled metrics sum errors and denominators across days rather than averaging daily ratios. Outcomes are temporally dependent; no IID significance test is applied. Once the test is inspected, any new hypothesis requires a new dated design and new unseen dates.
+
+### Five quote policies and controls
+
+| Policy | Centre signal | Half-spread |
+| --- | --- | ---: |
+| `fixed` | Zero | 2 bp |
+| `inventory` | Inventory adjustment only | 2 bp |
+| `constant_wide` | Inventory adjustment only | 3 bp |
+| `flow` | Inventory adjustment plus clipped `intercept + slope × imbalance` | 2 bp |
+| `intercept_only` | Inventory adjustment plus clipped intercept | 2 bp |
+
+Inventory adjustment is `−0.2 bp × inventory`; inventory is limited to ±10 normalized units. Total centre shift is capped to keep quotes straddling the reference, then quotes round outward to a tick of 0.0001. Execution edge against the reference is nonnegative by construction. These policies change the centre or use a predetermined width; they do not adapt the width to current estimated execution quality.
+
+`flow − inventory` is the primary paired comparison on the same date and willingness seed. `flow − intercept_only` distinguishes the imbalance slope from a constant intercept shift. The OLS intercept need not equal the training-mean label. The wider policy controls for a simple change in participation incentives; it does not volume-match the competing strategies or fully identify the cause of a P&L difference.
+
+### Hypothetical execution and accounting
+
+Each day's first eligible reference is normalized to 100, starting cash is 10,000 and inventory is zero. Each eligible next bucket provides at most one hypothetical customer. Its direction is the first real aggressor side in that bucket, but its willingness distance is an independent exponential draw with predefined mean 3 bp. The actual intrabucket arrival timestamp is not replayed: any assumed fill occurs at the bucket decision/start, with post-fill inventory held for the five-second interval. This is a discrete clock approximation, not a claim that the future observed aggressor arrived at the boundary.
+
+Five primary willingness seeds are shared across policies. The primary fee is 0.25 bp per normalized unit; terminal friction adds 1 bp plus the fee. Predeclared sensitivities change fees to 0 or 1 bp, or mean willingness to 1.5 or 6 bp. Model P&L is in normalized currency, not USDT and not a realized return. There is no order book, queue position, competition, partial-fill, latency, impact, margin or borrowing model.
+
+Across missing buckets, no hypothetical customer opportunity is inserted. Existing inventory is carried and revalued from the previous observed next reference to the next eligible current reference. Total P&L reconciles execution edge plus within-bucket and gap inventory revaluation, less fees and terminal cost. Time-weighted inventory follows this bucket-time convention. Drawdown uses observed ledger checkpoints and cannot recover an unobserved intrabucket path. Liquidation occurs at the last eligible next reference, not necessarily UTC midnight.
+
+The five seeds vary assumed willingness on the same historical path, not independently sampled markets. Results are paired by day and seed, then shown per day and across the three test days. No seed-based confidence interval or significance claim is appropriate. Better prediction and better hypothetical execution are separate findings; either can improve while the other worsens.
+
+### Reproduction versus a new study
+
+Use `python3 flow_research.py --stage reproduce` with the shipped freeze; the first run needs network access for public archives. Once cached, add `--offline`. Reproduction verifies the frozen model, plan and sources, recomputes development data, checks source checksums and compares regenerated test metrics to the first recorded test. Outputs named `reproduction*` preserve the original `test*` files.
+
+The original first-run sequence was `--stage develop` then `--stage test`, before any freeze/test-access records or test archive cache existed. The CLI rejects attempts to overwrite this history. A fresh research question needs new unseen dates, a new declared plan and a separately versioned study; an empty cache is not evidence that the researcher has never seen the dates.
+
+## Remaining research
+
+Adaptive spreads based on historical execution quality, hidden-regime experiments and randomized participation controls remain unimplemented. A queue-aware execution study would require additional order-book and order-lifecycle information. The implemented fixed-width controls and frozen date-based evaluation do not supply that missing execution evidence.
 
 ## Sources
 

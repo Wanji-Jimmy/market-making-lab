@@ -1,0 +1,10 @@
+{
+  "first_access_started_at_utc": "2026-10-15T09:01:18.474804+00:00",
+  "freeze_sha256": "b9b9a3c9fd97ca08a7685a3c09e02375c8029572171100d5f2df4283bc1ef4de",
+  "dates": [
+    "2025-09-06",
+    "2025-09-07",
+    "2025-09-08"
+  ],
+  "state": "Test access opened before download; a failure also counts as access. Reproduction never erases this record."
+}

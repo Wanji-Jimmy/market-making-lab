@@ -32,7 +32,24 @@ The September 4-5 validation sample has 34,490 eligible observations. Against a 
 
 The model, computational source files, tests, plan and development outputs are bound in [freeze.json](../flow_research_results/freeze.json), timestamped `2026-10-15T08:59:36.155589+00:00`. These files will be published before opening the test dates. The reporting script and explanatory prose may be written later; they do not alter frozen forecasting or policy computation.
 
-## Pending recorded stages
+## 2026-10-15 — First held-out evaluation
 
-- Verify the freeze, then open the declared test dates once and report every policy and sensitivity.
-- Record negative findings, limitations and an interview explanation based on the actual outputs.
+The model, code, tests and development records were published in commit [`9ed3ed0`](https://github.com/Wanji-Jimmy/market-making-lab/commit/9ed3ed0e207ce8294a881bacea8a9a4d02c2c5e1) before the test access began at `2026-10-15T09:01:18.474804+00:00`. The original access receipt is retained in [test_access.json](../flow_research_results/test_access.json). There were no post-test changes to computational sources, coefficients, dates or policy parameters.
+
+September 6-8 supplied 51,402 eligible labeled observations. Against the zero forecast, held-out MSE fell from 1.610946 to 1.602750 bp², while MAE rose from 0.637356 to 0.704599 bp. The small MSE improvement persisted, but the absolute-error deterioration became more pronounced. A prediction hit rate alone would have concealed this mixed result.
+
+All 135 declared policy runs were retained: 3 dates × 5 policies × (5 primary willingness seeds + 4 single-seed sensitivities). The primary daily mean P&L differences for `flow − inventory` were +0.772193, −0.073633 and +2.062366 normalized model-currency units. The wider-spread control had higher modeled P&L than the flow policy. These comparisons reflect assumed willingness and fills; they do not identify an executable trading edge.
+
+The fitted signal does now enter quote construction. The result supports a modest, mixed empirical relationship and a small conditional policy effect in this model, not a broad profitability claim. No new specification was selected from the test results. Next-stage hypotheses belong in a new plan with new unseen dates; realistic execution would additionally require quote/order-book and order-lifecycle information.
+
+The [generated report](../flow_research_results/report.md) retains every policy, daily result, sensitivity, error baseline and source manifest. The [learning guide](../docs/FLOW_RESEARCH_GUIDE.zh-CN.md) separates the implemented method from the learner's own understanding and contribution.
+
+## 2026-10-15 — Reproduction and independent result review
+
+The full offline reproduction finished at `2026-10-15T09:03:26.042171+00:00`. It refitted the same coefficients, reproduced development forecasts and regenerated all 135 test policy runs. Forecast metrics, daily policy summaries and quality diagnostics matched the original records exactly. Original test and first-access records were preserved.
+
+An independent result review checked all 135 rows, their 75 day/case/policy summaries, accounting reconciliation, source hashes and access chronology. It confirmed a mean primary `flow − inventory` P&L change of +0.920309 model units but a slightly worse mean maximum drawdown (1.955199 versus 1.935918). Participation was essentially unchanged. These mixed results remain in the report.
+
+GitHub Actions passed the frozen implementation on Python 3.10 and 3.12, including all 110 unit tests, the teaching ledger and the baseline smoke simulation: [run 38709866432](https://github.com/Wanji-Jimmy/market-making-lab/actions/runs/38709866432). No frozen computational source changed after test access. Later edits are result presentation and documentation only.
+
+This completes the declared iteration. It does not prove real execution quality or generalization beyond three test days. Wider quotes outperform the flow rule under the main willingness assumption, while the ranking changes under lower willingness; the apparent profitability depends materially on the artificial execution model. The next research decision is to examine execution assumptions using suitable quote/order-book evidence, not to tune this already-inspected test into a more attractive result.
