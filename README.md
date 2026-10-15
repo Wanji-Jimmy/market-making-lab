@@ -1,50 +1,38 @@
-# Market-Making Simulator
+# Market-making simulation
 
-**Why can a market maker earn the spread and still lose money?**
+A Python experiment comparing fixed-spread quotes with quotes that adjust for inventory. The account tracks cash, positions and P&L after each trade.
 
-A small Python learning project about bid/ask quotes, cash and inventory. It compares two simple rules:
+## Run
 
-| Rule | How it quotes |
-| --- | --- |
-| Fixed spread | Keep the same spread around the changing reference price. |
-| Inventory adjustment | Move both quotes down when holding too much inventory, encouraging sales; move them up when short. |
-
-Both rules face the same simulated market and customers. The account tracks trades, inventory, costs and P&L.
-
-## Start with the ledger
-
-Python 3.10+; no extra packages. Run from the repository root:
+Python 3.10 or later, with no extra packages:
 
 ```bash
 python3 lesson.py
+python3 experiment.py
+python3 -m unittest test_simulator -v
 ```
 
-This follows five preset events through the account. In this zero-fee example:
+`lesson.py` walks through five events. The account earns 2.70 from execution prices but loses 6.00 as its inventory falls in value, leaving a loss of 3.30 before closing the remaining position.
 
-| Contribution | Model units |
-| --- | ---: |
-| Execution edge relative to the reference price | +2.70 |
-| Inventory price changes | −6.00 |
-| Marked P&L before liquidation | **−3.30** |
+`simulator.py` contains the quoting, customer fills and accounting. `experiment.py` compares the two rules and writes [results.csv](results.csv). The code comments are currently in Chinese.
 
-The lesson: earning the spread does not remove the risk of holding inventory. In a separate falling-price scenario, inventory adjustment reduced the average loss, but both rules still lost money. [Scenario results](results/研究结果.md)
+## Quotes and results
 
-Start reading [lesson.py](lesson.py), then the quoting and accounting functions in [simulator.py](simulator.py). [中文简明介绍](README.zh-CN.md)
+The fixed rule quotes `bid = m - 1` and `ask = m + 1`, where `m` is the current reference price. The inventory rule subtracts `0.1 * q` from both prices. A positive position therefore lowers the quotes, making further purchases less attractive and sales more likely. Positions are capped at 10 units in either direction; the quote shift is clipped to keep the bid below the reference and the ask above it, with prices rounded to ticks.
 
-The core market and fills are simulated. Quotes straddle the reference by construction; there is no order book or queue model. Results are learning examples, not evidence of real trading profits.
+Each case uses 500 price paths of 300 steps, with seeds 10000 to 10499. Both rules face exactly the same prices and customer orders. Mean P&L below includes trade fees and the cost of closing the final position, in model units.
 
-<details>
-<summary>Optional: real-data extension and full research notes</summary>
+| Case | Fixed spread | Inventory adjustment |
+| --- | ---: | ---: |
+| Balanced customer flow | 107.17 | 109.82 |
+| Selling pressure and falling prices | -95.93 | -26.88 |
+| Informed customers | -30.71 | -29.00 |
+| Fee increased from 0.05 to 1.10 per unit | -22.74 | -23.08 |
 
-The extension uses public ETHUSDT trades to test whether recent buy/sell volume can help adjust quotes. Prediction results were mixed: squared error fell slightly, absolute error rose, and simulated policy comparisons depended on assumed customer willingness. Observed trades do not establish our own fills.
+Inventory adjustment reduced the loss in the falling-price case. It did not solve adverse selection: with informed customers, the fraction of losing runs increased from 56.4% to 73.8%, despite a slightly smaller average loss.
 
-- [Detailed project overview](docs/PROJECT_DETAILS.md) · [完整中文说明](docs/PROJECT_DETAILS.zh-CN.md)
-- [Real-data results](flow_research_results/report.md) · [Worked explanation](docs/FLOW_RESEARCH_GUIDE.zh-CN.md)
-- [Methods](docs/METHODOLOGY.md) · [Plan and research history](research/RESEARCH_JOURNAL.md)
-- [Minute-level diagnostic](docs/EMPIRICAL_RESULTS.md) · [Individual-trade diagnostic](docs/TICK_DATA_DIAGNOSTIC.md)
+The prices and customers are simulated. Fills depend on an assumed customer reservation price; there is no order book, queue or market impact. The results describe this model, rather than expected trading returns.
 
-The detailed overview contains the full reproduction commands, controls and checks. All code and recorded results remain in the repository.
+Earlier experiments with public trade data, the longer notes and their original results are preserved on the [extended-study branch](https://github.com/Wanji-Jimmy/market-making-lab/tree/extended-study).
 
-</details>
-
-Developed with Codex assistance as a learning project.
+Built with Codex assistance.

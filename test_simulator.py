@@ -1,8 +1,4 @@
-"""独立算术与模型约束测试；只使用 Python 标准库。
-
-运行：python3 -m unittest discover -s market_making_simulator -v
-这里的预期值来自手算账本，而不是再次调用被测函数计算。
-"""
+"""账本算术与报价、成交规则的测试。运行：python3 -m unittest test_simulator -v。"""
 
 import copy
 import unittest

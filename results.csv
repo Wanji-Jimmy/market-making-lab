@@ -1,0 +1,9 @@
+case,strategy,runs,steps,seed_start,fee_per_trade,mean_pnl,loss_probability,mean_abs_inventory,mean_max_drawdown
+neutral_low,fixed,500,300,10000,0.05,107.17054,0.0,4.461907,9.8131
+neutral_low,inventory,500,300,10000,0.05,109.8249,0.0,2.048033,3.80106
+selling_down,fixed,500,300,10000,0.05,-95.92786,0.882,8.677407,145.9915
+selling_down,inventory,500,300,10000,0.05,-26.8799,0.648,6.525473,87.8715
+informed,fixed,500,300,10000,0.05,-30.71168,0.564,4.293527,131.83664
+informed,inventory,500,300,10000,0.05,-29.00348,0.738,1.690987,62.91262
+fee_exceeds_edge,fixed,500,300,10000,1.1,-22.74386,0.888,4.461907,26.34144
+fee_exceeds_edge,inventory,500,300,10000,1.1,-23.0799,0.994,2.048033,22.191

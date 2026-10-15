@@ -1,4 +1,4 @@
-"""先读这一份：五个固定事件，把报价、成交、账本和盈亏串起来。"""
+"""五个固定事件的账本示例。运行：python3 lesson.py。"""
 
 from dataclasses import asdict
 

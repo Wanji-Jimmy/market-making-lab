@@ -1,2 +1,0 @@
-# Preserve the original recorded CSV bytes and their published SHA256.
-flow_research_results/test_runs.csv -text
