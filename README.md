@@ -35,4 +35,3 @@ The prices and customers are simulated. Fills depend on an assumed customer rese
 
 Earlier experiments with public trade data, the longer notes and their original results are preserved on the [extended-study branch](https://github.com/Wanji-Jimmy/market-making-lab/tree/extended-study).
 
-Built with Codex assistance.
