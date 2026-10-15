@@ -59,3 +59,7 @@ This completes the declared iteration. It does not prove real execution quality 
 The project is now scoped as a focused undergraduate study suitable for an approximately 40-hour guided learning and research effort. That is a planning budget, not a record of hours already completed. The feature set is complete for the stated question; further execution research is optional future work, not required to finish this project.
 
 The public overview was shortened to one research question, the method, the mixed findings and reproduction. Earlier diagnostics remain supporting evidence. No computational sources, parameters, dates or recorded results changed. Personal CV wording depends on the learner actually understanding and verifying the work described; AI assistance and the distinction between observed prices and hypothetical fills remain explicit.
+
+## 2026-10-15 — A simpler presentation, with the full work preserved
+
+The default learning entry now explains the two original quoting rules and the five-event ledger. The empirical extension and advanced research notes remain accessible through an expandable section. The preceding [English overview](../docs/PROJECT_DETAILS.md) and [Chinese overview](../docs/PROJECT_DETAILS.zh-CN.md) have been preserved in full, with relative links adjusted for their new location. This is a presentation change; all code, experiments, recorded results and research conclusions remain unchanged.
