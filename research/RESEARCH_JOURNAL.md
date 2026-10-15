@@ -53,3 +53,9 @@ An independent result review checked all 135 rows, their 75 day/case/policy summ
 GitHub Actions passed the frozen implementation on Python 3.10 and 3.12, including all 110 unit tests, the teaching ledger and the baseline smoke simulation: [run 38709866432](https://github.com/Wanji-Jimmy/market-making-lab/actions/runs/38709866432). No frozen computational source changed after test access. Later edits are result presentation and documentation only.
 
 This completes the declared iteration. It does not prove real execution quality or generalization beyond three test days. Wider quotes outperform the flow rule under the main willingness assumption, while the ranking changes under lower willingness; the apparent profitability depends materially on the artificial execution model. The next research decision is to examine execution assumptions using suitable quote/order-book evidence, not to tune this already-inspected test into a more attractive result.
+
+## 2026-10-15 — Scope closed for the undergraduate project
+
+The project is now scoped as a focused undergraduate study suitable for an approximately 40-hour guided learning and research effort. That is a planning budget, not a record of hours already completed. The feature set is complete for the stated question; further execution research is optional future work, not required to finish this project.
+
+The public overview was shortened to one research question, the method, the mixed findings and reproduction. Earlier diagnostics remain supporting evidence. No computational sources, parameters, dates or recorded results changed. Personal CV wording depends on the learner actually understanding and verifying the work described; AI assistance and the distinction between observed prices and hypothetical fills remain explicit.
