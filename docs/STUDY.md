@@ -42,6 +42,28 @@ Endpoint comparisons ask whether an earlier quote is beyond a later midpoint or 
 
 ## Evidence and reproduction
 
-The [data guide](../data/README.md) explains source files and checksum validation. The statistical helpers remain in `study/empirical_research.py` to preserve the frozen dependency recorded by the stock protocol; the earlier crypto runner is not a public entry point for this edition.
+The [data guide](../data/README.md) explains source files and checksum validation. The stock statistics now live in `study/stock_statistics.py`. Its eleven functions were extracted unchanged from the earlier crypto runner. The crypto study and superseded inventory experiment remain on the [archive branch](https://github.com/Wanji-Jimmy/market-making-lab/tree/archive/before-2026-10-26-simplification); they are no longer entry points on this branch.
 
-The publication keeps selected original result tables and two figures byte-for-byte. [Provenance](../results/provenance.json) records their original source hashes. Later edits add configurable data paths and English messages; they do not change the calculations. Original full manifests, private machine paths, older branches of the research and large trace archives remain in the local archive. A fresh run generates its own complete outputs and hashes. No new performance numbers were selected or optimised during packaging.
+The publication keeps selected original result tables and two figures byte-for-byte. [Provenance](../results/provenance.json) records their original source hashes. Later maintenance changes paths, messages and file organisation without changing the retained calculations. The stock protocol still records the original parent source and protocol hashes as historical identifiers. Current stock runs hash the extracted helpers, current producer, protocol and relocated tests before and after calculation. Fresh source hashes and run fingerprints therefore differ from the historical ones. Original full manifests, private machine paths, older branches of the research and large trace archives remain in the local archive. A fresh run generates its own complete outputs and hashes. No new performance numbers were selected or optimised during packaging.
+
+
+## Run the studies
+
+Use Python 3.10+ from the repository root. No external packages are required:
+
+```bash
+python3 study/lesson.py
+PYTHONPATH=study python3 -m unittest discover -s tests -q
+python3 study/research.py --output-dir /tmp/mm-inventory-check --runs 3 --steps 10 --paired-resamples 10 --markout-resamples 10
+python3 study/latency_research.py --output-dir /tmp/mm-delay-check --runs 2 --steps 10 --paired-resamples 10 --markout-resamples 10
+```
+
+The small runs check the pipeline, not the published estimates. Omit size overrides for the frozen full experiments. Choose an unused output directory; existing results are protected. The tests check the ledger, inventory limits, paired paths, quote replacement, training-only bounds and stock input validation.
+
+After obtaining the matching stock CSVs described in the data guide:
+
+```bash
+python3 study/equity_research.py --source-dir data/equities --acquisition-manifest data/acquisition_manifest.json --coverage-manifest data/equity_coverage.json --output-dir /tmp/mm-stock-check
+```
+
+Stock defaults resolve relative to this repository. Explicit paths let the raw files stay elsewhere. New or revised vendor downloads may fail the checksums; do not replace expected hashes to force a match.

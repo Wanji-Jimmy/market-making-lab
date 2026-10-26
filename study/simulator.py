@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
 import math
-import random
 
 
 def _number(name, value, minimum=None, maximum=None):
@@ -268,44 +267,6 @@ def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
                   quantity=quantity, execution_price=price,
                   fee=config.fee_per_trade, reason="filled")
     return result
-
-
-def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
-    _integer("seed", seed)
-    _number("initial_mid", initial_mid)
-    _number("tick_size", tick_size)
-    if tick_size <= 0 or initial_mid < max(1.0, 2 * tick_size):
-        raise ValueError("tick_size must be > 0 and initial_mid must be >= max(1, 2*tick)")
-    rng = random.Random(seed)
-    mid = _tick(initial_mid, tick_size)
-    price_floor = max(2, math.ceil(1.0 / tick_size)) * tick_size
-    events = []
-    for step in range(1, scenario.steps + 1):
-        change = scenario.drift + rng.gauss(0, scenario.volatility)
-        if rng.random() < scenario.jump_probability:
-            change += rng.choice((-1, 1)) * scenario.jump_size
-        next_mid = max(price_floor, _tick(mid + change, tick_size))
-        side, limit_price, informed = None, None, False
-        if rng.random() < scenario.arrival_probability:
-            informed = rng.random() < scenario.informed_fraction
-            if informed:
-                # Informed customers see the next price; the quoting function cannot.
-                signal = next_mid - mid + rng.gauss(0, 0.1)
-                side = "buy" if signal >= 0 else "sell"
-                limit_price = max(tick_size, mid + signal)
-            else:
-                side = "buy" if rng.random() < scenario.buy_probability else "sell"
-                if scenario.urgency_scale == 0:
-                    urgency = 0.0
-                elif scenario.demand_model == "exponential":
-                    urgency = rng.expovariate(1 / scenario.urgency_scale)
-                else:
-                    urgency = rng.uniform(0, 2 * scenario.urgency_scale)
-                direction = 1 if side == "buy" else -1
-                limit_price = max(tick_size, mid + direction * urgency)
-        events.append(Event(step, mid, next_mid, side, limit_price, informed))
-        mid = next_mid
-    return events
 
 
 def simulate(events, config, strategy, record=True, *, risk=None):

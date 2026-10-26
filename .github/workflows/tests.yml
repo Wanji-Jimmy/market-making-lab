@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m unittest discover -s study -q
+      - run: PYTHONPATH=study python -m unittest discover -s tests -q
       - run: python study/lesson.py
       - run: python study/research.py --output-dir /tmp/mm-inventory-smoke --runs 3 --steps 10 --paired-resamples 10 --markout-resamples 10
       - run: python study/latency_research.py --output-dir /tmp/mm-delay-smoke --runs 2 --steps 10 --paired-resamples 10 --markout-resamples 10

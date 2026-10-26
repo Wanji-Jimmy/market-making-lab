@@ -17,7 +17,7 @@ import shlex
 import sys
 import time
 
-from empirical_research import (BPS, HORIZONS, RULES, bound_statistics,
+from stock_statistics import (BPS, HORIZONS, RULES, bound_statistics,
     calibrate_training, canonical, linear_percentile, moving_block_indices,
     price_diagnostics, sha256, write_csv, write_json)
 
@@ -25,9 +25,9 @@ from empirical_research import (BPS, HORIZONS, RULES, bound_statistics,
 ROOT=Path(__file__).resolve().parent
 PROTOCOL_PATH=ROOT/"equity_protocol.json"
 ASSETS=("EBAY","LULU")
-SOURCE_FILES=("equity_research.py","equity_data.py","equity_protocol.json",
-              "test_equity_research.py","test_equity_data.py",
-              "empirical_research.py","empirical_protocol.json")
+SOURCE_FILES=("study/equity_research.py", "study/equity_data.py", "study/equity_protocol.json",
+              "study/stock_statistics.py", "tests/test_equity_research.py",
+              "tests/test_equity_data.py", "tests/test_stock_statistics.py")
 ENDPOINT_NAMES=("old_bid_above_future_mid","old_ask_below_future_mid",
                 "old_bid_touch_or_cross_future_ask","old_ask_touch_or_cross_future_bid")
 
@@ -38,7 +38,7 @@ def _integer(name,value,minimum=1):
 
 
 def source_hashes():
-    return {filename:sha256(ROOT/filename) for filename in SOURCE_FILES}
+    return {filename:sha256(ROOT.parent/filename) for filename in SOURCE_FILES}
 
 
 def load_protocol():
@@ -56,9 +56,10 @@ def load_protocol():
     for key,value in dict(block_sessions=5,resamples=2000,seed=100629,confidence_level=0.95).items():
         if protocol["bootstrap"][key]!=value:
             raise ValueError(f"frozen stock bootstrap {key} changed")
-    if protocol["parent_empirical_source_sha256"]!=sha256(ROOT/"empirical_research.py") \
-            or protocol["parent_empirical_protocol_sha256"]!=sha256(ROOT/"empirical_protocol.json"):
-        raise ValueError("frozen parent empirical dependency changed")
+    # These identify archived parent files; each run hashes the current helpers.
+    if protocol["parent_empirical_source_sha256"] != "9228cfedf2c73734c252224809e91ba05f156035b1f4d8afe5ba3f572b1d071c" \
+            or protocol["parent_empirical_protocol_sha256"] != "b1dbca29eed6b2ef77bb870da3684ca8a4d547391aecb29b9d7b3b13bc12438c":
+        raise ValueError("historical parent provenance changed")
     return protocol
 
 
@@ -326,7 +327,7 @@ def run_equity_research(output_dir,*,data=None,source_dir=None,manifest_path=Non
     manifest=dict(protocol_id=protocol["protocol_id"],run_classification="smoke" if overrides else "planned_equity_diagnostic",
         overrides=overrides,settings=settings,frozen_protocol=protocol,source_sha256=hashes,raw_dependency_sha256=raw_hashes,
         calibration_sha256=calibration_sha,fingerprint=hashlib.sha256(canonical(fingerprint_data)).hexdigest(),
-        fingerprint_definition=fingerprint_data,source_directory=str(ROOT),command=command or "Python API: equity_research.run_equity_research",
+        fingerprint_definition=fingerprint_data,source_directory=str(ROOT.parent),command=command or "Python API: equity_research.run_equity_research",
         runtime=dict(python=sys.version,implementation=platform.python_implementation(),platform=platform.platform()),
         started_utc=started,completed_utc=datetime.now(timezone.utc).isoformat(),elapsed_seconds=time.perf_counter()-clock_start,
         validation=dict(selected_asset_sessions=len(selected),expected_selected_asset_sessions=len(ASSETS)*2*settings["sessions_per_phase"],
@@ -343,9 +344,9 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir",type=Path,default=ROOT/"research_results"/"equity_v6")
     parser.add_argument("--source-dir",type=Path,
-        help="directory containing the eighty EBAY/LULU CSVs; defaults to the existing local acquisition")
+        help="directory containing the eighty EBAY/LULU CSVs; defaults to data/equities in this repository")
     parser.add_argument("--acquisition-manifest",dest="manifest_path",type=Path,
-        help="acquisition JSON with a files list and original SHA-256 values; defaults to SOURCE_DIR/acquisition_manifest.json")
+        help="acquisition JSON with a files list and original SHA-256 values; defaults to data/acquisition_manifest.json for the default data directory; otherwise SOURCE_DIR/acquisition_manifest.json")
     parser.add_argument("--coverage-manifest",dest="coverage_path",type=Path,
         help="prior coverage JSON with all eighty checksums; defaults to SOURCE_DIR/equity_results.json for a custom source directory")
     parser.add_argument("--quality-report",dest="quality_path",type=Path,

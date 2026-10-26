@@ -17,8 +17,8 @@ from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_SOURCE_DIR = ROOT.parent / "outputs" / "equity_acquisition_2026-10-26" / "data"
-DEFAULT_COVERAGE = ROOT.parent / "execution_timing_lab" / "results" / "equities" / "equity_results.json"
+DEFAULT_SOURCE_DIR = ROOT.parent / "data" / "equities"
+DEFAULT_COVERAGE = ROOT.parent / "data" / "equity_coverage.json"
 ASSETS = ("EBAY", "LULU")
 SESSION_TIMEZONE = "America/New_York"
 REGULAR_START = 9 * 60 + 30
@@ -219,7 +219,8 @@ def load_existing_equity_minutes(source_dir=None, manifest_path=None, coverage_p
     is required to exist; the default adjacent quality report remains optional.
     """
     source_dir = (DEFAULT_SOURCE_DIR if source_dir is None else Path(source_dir)).expanduser().resolve()
-    manifest_path = (source_dir / "acquisition_manifest.json" if manifest_path is None
+    manifest_path = (ROOT.parent / "data" / "acquisition_manifest.json" if manifest_path is None and source_dir == DEFAULT_SOURCE_DIR.resolve()
+                     else source_dir / "acquisition_manifest.json" if manifest_path is None
                      else Path(manifest_path)).expanduser().resolve()
     coverage_path = (DEFAULT_COVERAGE if coverage_path is None and source_dir == DEFAULT_SOURCE_DIR.resolve()
                      else source_dir / "equity_results.json" if coverage_path is None else Path(coverage_path)).expanduser().resolve()
