@@ -79,6 +79,6 @@
     "data_audit.json": "Loader QA, invalid quote/session counts, eighty raw-file hashes, manifests and selected calendar coverage",
     "manifest.json": "Source/dependency/output hashes, settings, smoke overrides, calibration freeze evidence and row counts"
   },
-  "execution": {"full_run_requires_root_instruction": true, "runtime_overrides": "Any session-count/bootstrap override or fixture injection is smoke, not the planned pilot", "source_policy": "Preserve v2-v5 files/results; fail nonempty output or source/raw-file changes; no external actions"},
+  "execution": {"runtime_overrides": "Any session-count/bootstrap override or fixture injection is smoke, not the planned pilot", "source_policy": "Reject nonempty output directories and source or raw-data changes during a run."},
   "excluded_claims": ["market-making profitability or simulated fills", "own-order or queue execution", "actual subsecond or millisecond latency calibration", "intraminute or intrawindow extrema", "direct Avellaneda-Stoikov parameter fit", "blind/unseen evaluation", "broad stock-universe or future coverage guarantees"]
 }

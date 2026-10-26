@@ -62,8 +62,8 @@ For stocks, follow the [data guide](../data/README.md) for the command and exact
 
 ## Source history
 
-The tables and two figures retain their original bytes; [provenance](../results/provenance.json) records producer hashes. Maintenance changed paths, messages and organisation, without changing calculations or selecting new results.
+The tables and two figures retain their original bytes; [provenance](../results/provenance.json) records producer hashes. Maintenance changed paths, messages, organisation and unused protocol metadata, without changing calculations or selecting new results.
 
-The functions in [stock_statistics.py](../study/stock_statistics.py) were extracted unchanged from the crypto runner. The stock protocol's parent hashes identify the historical source and protocol. Fresh runs hash the current producer, helpers, protocol and tests before and after calculation, giving different source hashes and fingerprints. Original full manifests and large traces remain archived locally.
+The functions in [stock_statistics.py](../study/stock_statistics.py) were extracted unchanged from the crypto runner. The stock protocol's parent hashes identify the historical source and protocol. Fresh stock runs hash the current producer, helpers, protocol and tests before and after calculation, giving different source hashes and fingerprints. Original full manifests and large traces remain archived locally.
 
 The [archive before simplification](https://github.com/Wanji-Jimmy/market-making-lab/tree/archive/before-2026-10-26-simplification) contains the crypto study and superseded inventory experiment. The [earlier public version](https://github.com/Wanji-Jimmy/market-making-lab/tree/archive/before-2026-10-26-update) and [extended study](https://github.com/Wanji-Jimmy/market-making-lab/tree/extended-study) also remain available.
