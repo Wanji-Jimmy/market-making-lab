@@ -1,0 +1,58 @@
+{
+  "inventory": {
+    "original_run": "v2",
+    "fingerprint": "4640286374199445bca7c4f232d0b304202d43825724eff7e69c099d4a66affb",
+    "producer_source_sha256": {
+      "simulator.py": "fe00e7277886a9bcfa11e308c04ed88fe74668fba2c1770c5565359c15774a5e",
+      "market_scenarios.py": "7a0389d3bf81ffc27afe2ebce45933bb3e8f7d322def840063900dc8606bd09f",
+      "diagnostics.py": "4b7b03cc6badaf15ee176dfc008f17a3655e514fc002a7c716b7cf3daf16a56f",
+      "research.py": "cf17b803ba633c4f1d6cd16944c549318709d6f7a9ded391b725afb5caac385f",
+      "research_protocol.json": "cc9e5317a97ae4c379653476d2715e524bbc483f94a91135f4e80aaeb2f090be"
+    },
+    "tables": {
+      "summary.csv": "05d976f561d0e571c0d196e00fd1f31ce69c33c0e8067e65a4388b66d442ca8a",
+      "paired.csv": "248d43b95a49cb0732beee754e98af97c22562ed5e9f6c325a1f2cdad6e73f5e",
+      "markouts.csv": "0685cb060891db45fc8f783deac0ded2198505de3aaba4ef587216f81c10f6fb"
+    }
+  },
+  "delay": {
+    "original_run": "latency_v3",
+    "fingerprint": "4d560963ff15f19ccaa4341ebe297fdc8edd25a75163d50a5c5864913b473b67",
+    "producer_source_sha256": {
+      "simulator.py": "fe00e7277886a9bcfa11e308c04ed88fe74668fba2c1770c5565359c15774a5e",
+      "market_scenarios.py": "7a0389d3bf81ffc27afe2ebce45933bb3e8f7d322def840063900dc8606bd09f",
+      "diagnostics.py": "4b7b03cc6badaf15ee176dfc008f17a3655e514fc002a7c716b7cf3daf16a56f",
+      "research.py": "cf17b803ba633c4f1d6cd16944c549318709d6f7a9ded391b725afb5caac385f",
+      "research_protocol.json": "cc9e5317a97ae4c379653476d2715e524bbc483f94a91135f4e80aaeb2f090be",
+      "latency_simulator.py": "715b0fc797f73cb0619bcf9511073d1bbe0f037b6db4db400f53f3a3b56e0aa6",
+      "latency_research.py": "0835c8356afab2c0b7ac81256dfb8170a2c3a232a94a869c55705f7dee952745",
+      "latency_protocol.json": "3dd08f18696451a5408aef042ed6d3178c34c962325173778640be9c3d1d0bf9"
+    },
+    "tables": {
+      "summary.csv": "f92adf1ee304b3f39eee6ebb708ba53732a21579b8a2e184603cac8539ae0795",
+      "paired.csv": "d5ad30109dd14ed9088247bbed46f0e1a059a29fb193a68cc40ac9f6b2595a4f",
+      "markouts.csv": "1279aa8c50c2ada6e3e15d91aa86a4091c9b0b86e24c63a8d8869623256f7251"
+    }
+  },
+  "stock": {
+    "original_run": "equity_v6",
+    "fingerprint": "6d0e64b29ac19a9cc3d5437a043b00f266450263843510f79caf4d3f9c8eaaa4",
+    "producer_source_sha256": {
+      "equity_research.py": "d4bc61b3fd766f8eafaa106a634890f5e0e00a6b05c6b322b211dd49217bf300",
+      "equity_data.py": "5b866f17611b4f6e6e873afd1ce3bfafe7e7133d24b2d3d0ffa584bf9612dffc",
+      "equity_protocol.json": "852e90c552efa64eae188f210bb09a7c16b6d986f106ec6012af5cfb2f6a9ce8",
+      "test_equity_research.py": "47cbd3a7c21e3e6d1c8575b6ce455a971fdf6f0b88097ca0076765cb183b26fc",
+      "test_equity_data.py": "379941faa0b02f6c3be5a5c12bd96337ee5f77a6a7c5a34a97d94a5c746ff843",
+      "empirical_research.py": "9228cfedf2c73734c252224809e91ba05f156035b1f4d8afe5ba3f572b1d071c",
+      "empirical_protocol.json": "b1dbca29eed6b2ef77bb870da3684ca8a4d547391aecb29b9d7b3b13bc12438c"
+    },
+    "tables": {
+      "summary.csv": "e4b340739aee05ca654cf0ddf4ecbb699ddaf0cc95cc799707f74dd5e8ad03cb",
+      "calibration.csv": "d71853b3381e7591f7c49378387a934715d8d052568b70dd64c0cfdf027f3742",
+      "daily.csv": "0227a34e0f03e00ee1c4841cc281ad600b09aefaa76ff20783cc9cd09a3b0701",
+      "session_segments.csv": "8fd9e9255020ef7da10d87f2aea054dbc8200d010ecea1e7afe45bcc377535e8",
+      "endpoint_quotes.csv": "636543e5ba46a43036942a12379ab7c4817507f360009b550649e83f77478f66"
+    }
+  },
+  "note": "Selected tables and figures are unchanged copies from the recorded runs. Producer source hashes identify those earlier runs, not the current maintenance version. Full original manifests and trace archives are retained locally. New runs write new manifests. This publication focuses on inventory, quote delay and stock price-risk diagnostics; other historical experiments are not included."
+}

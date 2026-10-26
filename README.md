@@ -1,53 +1,57 @@
-# Market-making simulation
+# Market Making Lab
 
-A Python experiment comparing fixed-spread quotes with quotes that adjust for inventory. The account tracks cash, positions and P&L after each trade.
+**When does inventory control help, and what happens when quotes arrive late?**
+
+A Python study of quoting and risk. It starts with a cash-and-inventory ledger, compares policies on the same simulated markets, and checks a separate price-risk assumption using historical stock quotes.
+
+## Three findings
+
+- **Inventory control has a trade-off.** In balanced simulated flow, the AS-inspired inventory rule reduced mean drawdown from 85.45 to 39.14 model units. Its profit difference against a rule with the same spread was small and uncertain: +0.89, with a paired 95% interval of −5.18 to +7.02.
+- **Late replacement changes the outcome.** With 75% informed customers, the AS-inspired inventory rule's mean net P&L changed from +8.88 with immediate replacement to −114.11 with a three-event delay. A fixed wider buffer reduced the loss to −4.27, while fills fell from 96.32 to 31.80. Wider quotes gave up activity; they did not establish a profitable strategy.
+- **An average can hide opening risk.** A bound fixed using earlier stock data covered about 95% of later three-minute moves over the whole session, but only 76–80% during the first 30 origin minutes.
+
+| Stock: fixed empirical 95% bound | Whole-session coverage | Opening 30-minute coverage |
+| --- | ---: | ---: |
+| EBAY | 95.13% | 76.33% |
+| LULU | 95.23% | 79.50% |
+
+![Stock coverage by time of day](results/stock/equity_session_bands.png)
+
+Synthetic P&L includes trading fees and terminal liquidation. The stock diagnostic measures price-risk coverage, not fills or trading profit. The two experiments use different units and are not combined into one backtest.
+
+## Explore
+
+- [Study and assumptions](docs/STUDY.md): comparisons, accounting and references.
+- Saved tables: [inventory](results/inventory/summary.csv), [delay](results/delay/summary.csv), [stocks](results/stock/summary.csv).
+- [Data preparation](data/README.md): exact file requirements and checksums.
+
+The `study/` folder holds the code and tests. The saved CSVs and figures can be read without downloading market data. This public edition focuses on three questions; earlier experiments remain preserved separately.
 
 ## Run
 
-Python 3.10 or later, with no extra packages:
+Python 3.10+; calculations and tests use only the standard library. From the repository root:
 
 ```bash
-python3 lesson.py
-python3 experiment.py
-python3 -m unittest test_simulator -v
+python3 -m unittest discover -s study -q
+python3 study/lesson.py
+python3 study/research.py --output-dir /tmp/mm-inventory-check --runs 3 --steps 10 --paired-resamples 10 --markout-resamples 10
+python3 study/latency_research.py --output-dir /tmp/mm-delay-check --runs 2 --steps 10 --paired-resamples 10 --markout-resamples 10
 ```
 
-`lesson.py` walks through five events. The account earns 2.70 from execution prices but loses 6.00 as its inventory falls in value, leaving a loss of 3.30 before closing the remaining position.
+The small runs check the pipeline, not the published estimates. Omit size overrides for the frozen full experiments. Use a new output directory; existing results are protected.
 
-`simulator.py` contains the quoting, customer fills and accounting. `experiment.py` compares both rules at inventory limits of 5, 10 and 20, and writes [results.csv](results.csv). Some code comments are in Chinese.
+After obtaining the matching stock CSVs as described in the data guide:
 
-## Quotes and results
+```bash
+python3 study/equity_research.py --source-dir data/equities --acquisition-manifest data/acquisition_manifest.json --coverage-manifest data/equity_coverage.json --output-dir /tmp/mm-stock-check
+```
 
-The fixed rule quotes `bid = m - 1` and `ask = m + 1`, where `m` is the current reference price. The inventory rule subtracts `0.1 * q` from both prices. A positive position therefore lowers the quotes, making further purchases less attractive and sales more likely. The baseline caps positions at 10 units in either direction. The quote shift is clipped to keep the bid below the reference and the ask above it, with prices rounded to ticks; this same rule applies at every inventory limit.
+This recalculation uses the published metadata and explicitly supplied data directory. Raw stock files are not bundled. New or revised downloads may fail the checksums.
 
-Each case uses 500 price paths of 300 steps, with seeds 10000 to 10499. Every rule and inventory limit faces exactly the same prices and customer orders. Mean P&L below uses the baseline limit of 10 and includes trade fees and the cost of closing the final position, in model units.
+## Limits
 
-| Case | Fixed spread | Inventory adjustment |
-| --- | ---: | ---: |
-| Balanced customer flow | 107.17 | 109.82 |
-| Selling pressure and falling prices | -95.93 | -26.88 |
-| Informed customers | -30.71 | -29.00 |
-| Fee increased from 0.05 to 1.10 per unit | -22.74 | -23.08 |
+The simulated market has no queue position, partial fills or impact. Delays are event counts, not measured milliseconds. Informed flow is a stated stress assumption. The stock sample has two names and 20 evaluation sessions each; minute-end quotes cannot reveal our own fills or cancellations. Previously used historical data is not a blind test. Coverage intervals condition on earlier calibration.
 
-Inventory adjustment reduced the loss in the falling-price case. It did not solve adverse selection: with informed customers, the fraction of losing runs increased from 56.4% to 73.8%, despite a slightly smaller average loss and a lower average drawdown (131.84 to 62.91). These measures answer different questions about risk.
+This is a study of accounting, controlled comparisons and failed assumptions, not evidence of live profitability. [Saved-result provenance](results/provenance.json) distinguishes the original experiments from later maintenance changes.
 
-## What does a tighter limit cost?
-
-The next comparison changes only the inventory limit. Results below use the inventory-adjusted rule; the CSV includes both rules in all four cases. Values are averages per path.
-
-| Case | Limit | Net P&L | Mean absolute inventory | Drawdown | Fills | Blocked by limit |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Balanced flow | 5 | 107.59 | 1.89 | 3.35 | 121.86 | 2.23 |
-| Balanced flow | 10 | 109.82 | 2.05 | 3.80 | 124.46 | 0.01 |
-| Balanced flow | 20 | 109.83 | 2.05 | 3.81 | 124.47 | 0.00 |
-| Selling pressure | 5 | 3.41 | 3.87 | 44.05 | 83.45 | 28.14 |
-| Selling pressure | 10 | -26.88 | 6.53 | 87.87 | 103.35 | 5.45 |
-| Selling pressure | 20 | -40.91 | 7.64 | 107.92 | 108.59 | 0.14 |
-
-Tightening the limit from 10 to 5 reduced both drawdown and fills. It gave up some profit with balanced flow, but improved average P&L under selling pressure. Against informed customers, the same change barely helped drawdown and slightly worsened average P&L (-29.00 to -29.11). A lower limit is not automatically a better strategy.
-
-"Blocked" counts customers who accepted the current quote but could not trade because of the limit. It is not the number of profitable trades that a different limit would have produced: earlier fills also change inventory and later quotes. Drawdown uses portfolio values before terminal liquidation; net P&L includes liquidation costs. The CSV also splits net P&L into execution edge plus inventory P&L, less trade fees and liquidation costs.
-
-The prices and customers are simulated. Fills depend on an assumed customer reservation price; there is no order book, queue or market impact. The results describe this model, rather than expected trading returns.
-
-Earlier experiments with public trade data, the longer notes and their original results are preserved on the [extended-study branch](https://github.com/Wanji-Jimmy/market-making-lab/tree/extended-study).
+The [earlier public version](https://github.com/Wanji-Jimmy/market-making-lab/tree/archive/before-2026-10-26-update) and [extended study](https://github.com/Wanji-Jimmy/market-making-lab/tree/extended-study) remain available.

@@ -8,16 +8,13 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.12"]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: python -m unittest test_simulator -v
-      - run: python lesson.py
-      - run: python experiment.py
-      - run: git diff --exit-code -- results.csv
+          python-version: '3.11'
+      - run: python -m unittest discover -s study -q
+      - run: python study/lesson.py
+      - run: python study/research.py --output-dir /tmp/mm-inventory-smoke --runs 3 --steps 10 --paired-resamples 10 --markout-resamples 10
+      - run: python study/latency_research.py --output-dir /tmp/mm-delay-smoke --runs 2 --steps 10 --paired-resamples 10 --markout-resamples 10

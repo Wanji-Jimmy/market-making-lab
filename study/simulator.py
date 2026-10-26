@@ -6,24 +6,24 @@ import random
 
 def _number(name, value, minimum=None, maximum=None):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError(f"{name} 必须是有限数值")
+        raise ValueError(f"{name} must be a finite number")
     if not math.isfinite(value):
-        raise ValueError(f"{name} 必须是有限数值")
+        raise ValueError(f"{name} must be a finite number")
     if minimum is not None and value < minimum:
-        raise ValueError(f"{name} 必须 >= {minimum}")
+        raise ValueError(f"{name} must be >= {minimum}")
     if maximum is not None and value > maximum:
-        raise ValueError(f"{name} 必须 <= {maximum}")
+        raise ValueError(f"{name} must be <= {maximum}")
 
 
 def _integer(name, value, minimum=None):
     if isinstance(value, bool) or not isinstance(value, int):
-        raise ValueError(f"{name} 必须是整数")
+        raise ValueError(f"{name} must be an integer")
     if minimum is not None and value < minimum:
-        raise ValueError(f"{name} 必须 >= {minimum}")
+        raise ValueError(f"{name} must be >= {minimum}")
 
 
 def _tick(price, tick_size, direction="nearest"):
-    # 容差用于处理 tick 边界的浮点误差。
+    # Tolerance handles floating-point error at tick boundaries.
     units = price / tick_size
     if direction == "down":
         units = math.floor(units + 1e-10)
@@ -54,13 +54,13 @@ class Config:
                      "liquidation_half_spread", "tick_size"):
             _number(name, getattr(self, name), 0)
         if self.tick_size <= 0 or self.half_spread < self.tick_size:
-            raise ValueError("tick_size 必须 > 0，half_spread 必须 >= tick_size")
+            raise ValueError("tick_size must be > 0 and half_spread must be >= tick_size")
         if not isinstance(self.allow_short, bool):
-            raise ValueError("allow_short 必须是布尔值")
+            raise ValueError("allow_short must be a boolean")
         if abs(self.initial_inventory) > self.inventory_limit:
-            raise ValueError("initial_inventory 超出库存上限")
+            raise ValueError("initial_inventory exceeds inventory_limit")
         if not self.allow_short and self.initial_inventory < 0:
-            raise ValueError("allow_short=False 时不能从负库存开始")
+            raise ValueError("initial_inventory cannot be negative when allow_short=False")
 
 
 @dataclass(frozen=True)
@@ -80,9 +80,9 @@ class Scenario:
 
     def __post_init__(self):
         if not isinstance(self.name, str) or not self.name.strip():
-            raise ValueError("scenario name 必须是非空字符串")
+            raise ValueError("scenario name must be a nonempty string")
         if not isinstance(self.label, str) or not self.label.strip():
-            raise ValueError("scenario label 必须是非空字符串")
+            raise ValueError("scenario label must be a nonempty string")
         _integer("steps", self.steps, 1)
         _number("drift", self.drift)
         for name in ("volatility", "urgency_scale", "jump_size"):
@@ -91,7 +91,27 @@ class Scenario:
                      "informed_fraction", "jump_probability"):
             _number(name, getattr(self, name), 0, 1)
         if self.demand_model not in ("exponential", "uniform"):
-            raise ValueError("demand_model 只能是 exponential 或 uniform")
+            raise ValueError("demand_model must be exponential or uniform")
+
+
+@dataclass(frozen=True)
+class RiskParameters:
+    """Frozen model inputs, not estimates made from future path observations.
+
+    Volatility is in price units per square-root step, risk aversion in
+    inverse price units, and arrival_decay in inverse price units. These
+    parameters define an AS-inspired benchmark, not a calibrated optimum.
+    """
+
+    risk_aversion: float = 0.0005
+    volatility: float = 1.2
+    arrival_decay: float = 2 / 3
+
+    def __post_init__(self):
+        for name in ("risk_aversion", "volatility", "arrival_decay"):
+            _number(name, getattr(self, name), 0)
+        if self.risk_aversion <= 0 or self.arrival_decay <= 0:
+            raise ValueError("risk_aversion and arrival_decay must be > 0")
 
 
 @dataclass(frozen=True)
@@ -108,12 +128,12 @@ class Event:
         _number("mid_price", self.mid_price)
         _number("next_mid", self.next_mid)
         if self.mid_price <= 0 or self.next_mid <= 0:
-            raise ValueError("事件参考价必须为正")
+            raise ValueError("event reference prices must be positive")
         _validate_customer(self.customer_side, self.limit_price)
         if not isinstance(self.informed, bool):
-            raise ValueError("informed 必须是布尔值")
+            raise ValueError("informed must be a boolean")
         if self.customer_side is None and self.informed:
-            raise ValueError("没有客户时 informed 必须为 False")
+            raise ValueError("informed must be False when there is no customer")
 
 
 @dataclass(frozen=True)
@@ -121,50 +141,67 @@ class Quote:
     bid: float
     ask: float
     clipped: bool = False
+    requested_shift: float = 0.0
+    requested_width: float | None = None
 
     def __post_init__(self):
         _number("bid", self.bid)
         _number("ask", self.ask)
         if not 0 < self.bid < self.ask:
-            raise ValueError("报价必须满足 0 < bid < ask")
+            raise ValueError("quotes must satisfy 0 < bid < ask")
         if not isinstance(self.clipped, bool):
-            raise ValueError("clipped 必须是布尔值")
+            raise ValueError("clipped must be a boolean")
+        _number("requested_shift", self.requested_shift)
+        if self.requested_width is not None:
+            _number("requested_width", self.requested_width, 0)
 
 
 def _validate_customer(side, limit_price):
     if side not in (None, "buy", "sell"):
-        raise ValueError("customer_side 只能是 buy、sell 或 None")
+        raise ValueError("customer_side must be buy, sell or None")
     if side is None:
         if limit_price is not None:
-            raise ValueError("没有客户时 limit_price 必须为 None")
+            raise ValueError("limit_price must be None when there is no customer")
     else:
         _number("limit_price", limit_price)
         if limit_price <= 0:
-            raise ValueError("客户 limit_price 必须为正")
+            raise ValueError("customer limit_price must be positive")
 
 
 def _validate_inventory(inventory, config):
     _integer("inventory", inventory)
     if abs(inventory) > config.inventory_limit:
-        raise ValueError("当前库存已经超出 inventory_limit")
+        raise ValueError("current inventory exceeds inventory_limit")
     if inventory < 0 and not config.allow_short:
-        raise ValueError("allow_short=False 时当前库存不能为负")
+        raise ValueError("current inventory cannot be negative when allow_short=False")
 
 
 def _validate_strategy(strategy):
-    if strategy not in ("fixed", "inventory"):
-        raise ValueError("strategy 只能是 fixed 或 inventory")
+    if strategy not in ("fixed", "inventory", "as_symmetric", "as_inventory"):
+        raise ValueError("unknown quoting strategy")
 
 
-def make_quotes(mid_price, inventory, config, strategy):
+def make_quotes(mid_price, inventory, config, strategy, *,
+                remaining_steps=None, risk=None):
     _validate_strategy(strategy)
     _validate_inventory(inventory, config)
     _number("mid_price", mid_price)
     if mid_price <= config.tick_size:
-        raise ValueError("mid_price 必须大于 tick_size 才能提供正的买价")
+        raise ValueError("mid_price must exceed tick_size to permit a positive bid")
+    if strategy in ("as_symmetric", "as_inventory"):
+        if not isinstance(risk, RiskParameters):
+            raise ValueError("AS-inspired quotes require explicit RiskParameters")
+        _integer("remaining_steps", remaining_steps, 0)
+        variance_budget = risk.volatility ** 2 * remaining_steps
+        inventory_loading = risk.risk_aversion * variance_budget
+        half_width = (0.5 * inventory_loading
+                      + math.log1p(risk.risk_aversion / risk.arrival_decay)
+                      / risk.risk_aversion)
+        shift = -inventory_loading * inventory if strategy == "as_inventory" else 0.0
+        return _matched_tick_quote(mid_price, half_width, shift, config.tick_size)
     k = config.skew_strength if strategy == "inventory" else 0.0
     desired_shift = -k * inventory
-    # 限幅避免报价跨过参考价；bid 向下、ask 向上取整。
+    # Clip the shift so quotes straddle the mid; round bid down and ask up.
     max_shift = config.half_spread - config.tick_size
     shift = max(-max_shift, min(max_shift, desired_shift))
     centre = mid_price + shift
@@ -172,7 +209,33 @@ def make_quotes(mid_price, inventory, config, strategy):
     bid = _tick(max(config.tick_size, raw_bid), config.tick_size, "down")
     ask = _tick(centre + config.half_spread, config.tick_size, "up")
     clipped = shift != desired_shift or raw_bid < config.tick_size
-    return Quote(bid, ask, clipped)
+    return Quote(bid, ask, clipped, desired_shift, 2 * config.half_spread)
+
+
+def _matched_tick_quote(mid_price, half_width, requested_shift, tick_size):
+    """Keep the integer total width identical in the AS ablation pair.
+
+    Round half-width outward once, then translate both sides by the same
+    integer tick count. Even total width avoids a systematic half-tick
+    centre bias for the symmetric control on an on-tick reference price.
+    """
+    _number("half_width", half_width, 0)
+    _number("requested_shift", requested_shift)
+    width_ticks = 2 * max(1, math.ceil(half_width / tick_size - 1e-10))
+    mid_ticks = mid_price / tick_size
+    symmetric_bid = math.floor(mid_ticks - width_ticks / 2 + 1e-10)
+    shift_ticks = round(requested_shift / tick_size)
+    requested_bid = symmetric_bid + shift_ticks
+    # Positive prices and at least one tick away from the current mid.
+    lower_bid = max(1, math.ceil(mid_ticks + 1 - 1e-10) - width_ticks)
+    upper_bid = math.floor(mid_ticks - 1 + 1e-10)
+    if lower_bid > upper_bid:
+        raise ValueError("no positive two-sided quote at this tick and mid")
+    bid_ticks = max(lower_bid, min(upper_bid, requested_bid))
+    bid = float(Decimal(bid_ticks) * Decimal(str(tick_size)))
+    ask = float(Decimal(bid_ticks + width_ticks) * Decimal(str(tick_size)))
+    return Quote(bid, ask, bid_ticks != requested_bid,
+                 requested_shift, 2 * half_width)
 
 
 def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
@@ -184,7 +247,7 @@ def execute_trade(cash, inventory, quote, customer_side, limit_price, config):
     if customer_side is None:
         return result
 
-    # customer_side 是客户方向；quantity 按做市商买入 +1、卖出 -1。
+    # Quantity is from the maker's perspective: +1 bought, -1 sold.
     quantity = -1 if customer_side == "buy" else 1
     price = quote.ask if quantity == -1 else quote.bid
     accepted = price <= limit_price if quantity == -1 else price >= limit_price
@@ -212,7 +275,7 @@ def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
     _number("initial_mid", initial_mid)
     _number("tick_size", tick_size)
     if tick_size <= 0 or initial_mid < max(1.0, 2 * tick_size):
-        raise ValueError("tick_size 必须 > 0，initial_mid 必须 >= max(1, 2*tick)")
+        raise ValueError("tick_size must be > 0 and initial_mid must be >= max(1, 2*tick)")
     rng = random.Random(seed)
     mid = _tick(initial_mid, tick_size)
     price_floor = max(2, math.ceil(1.0 / tick_size)) * tick_size
@@ -226,7 +289,7 @@ def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
         if rng.random() < scenario.arrival_probability:
             informed = rng.random() < scenario.informed_fraction
             if informed:
-                # 知情客户可读取下一步价格；报价函数不能读取。
+                # Informed customers see the next price; the quoting function cannot.
                 signal = next_mid - mid + rng.gauss(0, 0.1)
                 side = "buy" if signal >= 0 else "sell"
                 limit_price = max(tick_size, mid + signal)
@@ -245,47 +308,58 @@ def generate_market(scenario, seed, initial_mid=100.0, tick_size=0.01):
     return events
 
 
-def simulate(events, config, strategy, record=True):
+def simulate(events, config, strategy, record=True, *, risk=None):
     _validate_strategy(strategy)
     if not isinstance(record, bool):
-        raise ValueError("record 必须是布尔值")
+        raise ValueError("record must be a boolean")
     if not events:
-        raise ValueError("events 不能为空，初始库存需要一个参考价才能估值")
+        raise ValueError("events cannot be empty: initial inventory needs a reference price")
     if not isinstance(events[0], Event):
-        raise ValueError("events 中每一项都必须是 Event")
+        raise ValueError("every item in events must be an Event")
+    if strategy in ("as_symmetric", "as_inventory") and not isinstance(risk, RiskParameters):
+        raise ValueError("AS-inspired simulation requires explicit RiskParameters")
     cash, inventory = float(config.initial_cash), config.initial_inventory
     initial_equity = cash + inventory * events[0].mid_price
     equity = peak_equity = initial_equity
     trace = []
     trades = quote_clips = blocked_inventory = 0
     total_fees = spread_capture = inventory_pnl = 0.0
+    inventory_carry_pnl = fill_revaluation_pnl = 0.0
+    sum_quote_width = sum_abs_quote_shift = sum_requested_abs_shift = 0.0
     sum_abs_inventory = max_drawdown = 0.0
     max_abs_inventory = abs(inventory)
     previous_event = None
 
-    for event in events:
+    for event_index, event in enumerate(events):
         if not isinstance(event, Event):
-            raise ValueError("events 中每一项都必须是 Event")
+            raise ValueError("every item in events must be an Event")
         if previous_event is not None:
             if event.step <= previous_event.step:
-                raise ValueError("事件 step 必须严格递增")
+                raise ValueError("event steps must be strictly increasing")
             if not math.isclose(event.mid_price, previous_event.next_mid,
                                 rel_tol=0.0, abs_tol=1e-9):
-                raise ValueError("价格路径不连续：当前 mid_price 必须等于上次 next_mid")
-        quote = make_quotes(event.mid_price, inventory, config, strategy)
+                raise ValueError("discontinuous price path: mid_price must equal the previous next_mid")
+        inventory_before = inventory
+        quote = make_quotes(event.mid_price, inventory, config, strategy,
+                            remaining_steps=len(events) - event_index, risk=risk)
         trade = execute_trade(cash, inventory, quote, event.customer_side,
                               event.limit_price, config)
         cash, inventory = trade["cash"], trade["inventory"]
 
-        # 先成交，再按成交后的库存计算价格变动损益。
+        # Fill first, then apply the price move to the updated inventory.
         edge = 0.0
         if trade["filled"]:
             edge = trade["quantity"] * (event.mid_price - trade["execution_price"])
         holding_change = inventory * (event.next_mid - event.mid_price)
+        carry_change = inventory_before * (event.next_mid - event.mid_price)
+        fill_change = trade["quantity"] * (event.next_mid - event.mid_price)
+        if not math.isclose(holding_change, carry_change + fill_change,
+                            rel_tol=1e-9, abs_tol=1e-7):
+            raise ArithmeticError("inventory revaluation split does not reconcile")
         net_change = edge + holding_change - trade["fee"]
         new_equity = cash + inventory * event.next_mid
         if not math.isclose(new_equity - equity, net_change, rel_tol=1e-9, abs_tol=1e-7):
-            raise ArithmeticError("账本不平：财富变化不等于价差收益＋库存损益－费用")
+            raise ArithmeticError("ledger mismatch: wealth change must equal spread capture + inventory P&L - fees")
         equity = new_equity
         peak_equity = max(peak_equity, equity)
         max_drawdown = max(max_drawdown, peak_equity - equity)
@@ -295,6 +369,13 @@ def simulate(events, config, strategy, record=True):
         total_fees += trade["fee"]
         spread_capture += edge
         inventory_pnl += holding_change
+        inventory_carry_pnl += carry_change
+        fill_revaluation_pnl += fill_change
+        actual_width = quote.ask - quote.bid
+        actual_shift = (quote.bid + quote.ask) / 2 - event.mid_price
+        sum_quote_width += actual_width
+        sum_abs_quote_shift += abs(actual_shift)
+        sum_requested_abs_shift += abs(quote.requested_shift)
         sum_abs_inventory += abs(inventory)
         max_abs_inventory = max(max_abs_inventory, abs(inventory))
         if record:
@@ -302,15 +383,18 @@ def simulate(events, config, strategy, record=True):
                 step=event.step, mid_price=event.mid_price, next_mid=event.next_mid,
                 customer_side=event.customer_side, limit_price=event.limit_price,
                 informed=event.informed, bid=quote.bid, ask=quote.ask, clipped=quote.clipped,
-                cash=cash, inventory=inventory, filled=trade["filled"],
+                requested_shift=quote.requested_shift, requested_width=quote.requested_width,
+                actual_shift=actual_shift, actual_width=actual_width,
+                cash=cash, inventory_before=inventory_before,
+                inventory=inventory, filled=trade["filled"],
                 quantity=trade["quantity"], execution_price=trade["execution_price"],
                 fee=trade["fee"], reason=trade["reason"], equity=equity,
                 pnl=equity - initial_equity, edge=edge, inventory_pnl=holding_change,
+                inventory_carry_pnl=carry_change, fill_revaluation_pnl=fill_change,
                 net_change=net_change,
             ))
         previous_event = event
 
-    # 期末多头卖出、空头买回，都计入平仓成本。
     liquidation_cost = abs(inventory) * (config.liquidation_half_spread + config.fee_per_trade)
     final_cash = cash + inventory * events[-1].next_mid - liquidation_cost
     metrics = dict(
@@ -318,8 +402,12 @@ def simulate(events, config, strategy, record=True):
         trades=trades, mean_abs_inventory=sum_abs_inventory / len(events),
         max_abs_inventory=max_abs_inventory, final_inventory=inventory,
         total_fees=total_fees, spread_capture=spread_capture, inventory_pnl=inventory_pnl,
+        inventory_carry_pnl=inventory_carry_pnl, fill_revaluation_pnl=fill_revaluation_pnl,
         liquidation_cost=liquidation_cost, max_drawdown=max_drawdown,
         quote_clips=quote_clips, blocked_inventory=blocked_inventory,
+        mean_quote_width=sum_quote_width / len(events),
+        mean_abs_quote_shift=sum_abs_quote_shift / len(events),
+        mean_requested_abs_shift=sum_requested_abs_shift / len(events),
         initial_equity=initial_equity, final_equity=equity, final_cash=cash,
         final_cash_after_liquidation=final_cash, inventory_after_liquidation=0,
     )

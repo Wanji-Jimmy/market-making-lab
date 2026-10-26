@@ -1,0 +1,84 @@
+{
+  "protocol_id": "market-making-equity-minute-mid-risk-v6-2026-10-26",
+  "schema_version": 1,
+  "design_status": "frozen_before_first_full_equity_execution",
+  "parent_empirical_source_sha256": "9228cfedf2c73734c252224809e91ba05f156035b1f4d8afe5ba3f572b1d071c",
+  "parent_empirical_protocol_sha256": "b1dbca29eed6b2ef77bb870da3684ca8a4d547391aecb29b9d7b3b13bc12438c",
+  "purpose": "A bounded historical-stock pilot of fixed minute-scale price-risk bounds and recorded BBO endpoint diagnostics. It is not a simulated market-making strategy or fill/PnL backtest.",
+  "prior_information": "The existing Algoseek EBAY/LULU sample was already acquired and used in another project. This chronological split is not claimed blind or unseen. Rules, split, horizons, endpoint comparisons and bootstrap settings are fixed before full equity statistics.",
+  "assets": ["EBAY", "LULU"],
+  "session_dates": ["2021-01-04", "2021-01-05", "2021-01-06", "2021-01-07", "2021-01-08", "2021-01-11", "2021-01-12", "2021-01-13", "2021-01-14", "2021-01-15", "2021-01-19", "2021-01-20", "2021-01-21", "2021-01-22", "2021-01-25", "2021-01-26", "2021-01-27", "2021-01-28", "2021-01-29", "2021-02-01", "2021-02-02", "2021-02-03", "2021-02-04", "2021-02-05", "2021-02-08", "2021-02-09", "2021-02-10", "2021-02-11", "2021-02-12", "2021-02-16", "2021-02-17", "2021-02-18", "2021-02-19", "2021-02-22", "2021-02-23", "2021-02-24", "2021-02-25", "2021-02-26", "2021-03-01", "2021-03-02"],
+  "split": {"training_sessions": 20, "evaluation_sessions": 20, "training_start": "2021-01-04", "training_end": "2021-02-01", "evaluation_start": "2021-02-02", "evaluation_end": "2021-03-02"},
+  "data": {
+    "provider": "Existing Algoseek historical stock minute-bar sample, original local files only",
+    "timezone": "America/New_York",
+    "regular_hours": "09:30 inclusive to 16:00 exclusive bar labels; 390 one-minute bars per regular session",
+    "minutes_per_session": 390,
+    "primary_price": "Minute-END recorded NBBO midpoint: (CloseBidPrice + CloseAskPrice) / 2",
+    "quote_validity": "Both recorded end bid and ask positive finite and bid <= ask. Locked bid == ask quotes remain valid; crossed or invalid quotes are marked invalid rather than interpolated.",
+    "window_validity": "For origin i and horizon h, every minute i,...,i+h must have a valid recorded end quote. Skip any window touching an invalid minute; do not bridge the gap, interpolate, or stitch sessions.",
+    "structural_policy": "Require all 80 selected asset/session files and all 390 regular-minute positions per session. Reject structural-invalid sessions or missing/duplicate asset/date keys before a planned run. Quote-invalid windows are explicitly counted, with differing denominators retained.",
+    "network_access": false,
+    "provenance": "Original 80 CSVs, acquisition/coverage manifests and their hashes are retained and checked before/after computation. No redownload or copying of raw files."
+  },
+  "horizons_minutes": [1, 3, 10],
+  "returns": {"definition": "r(d,i,h)=log(mid[d,i+h]/mid[d,i]) for i=0,...,390-h-1 when all h+1 quotes are valid", "cross_session": false, "overlapping_windows": true, "basis_points_multiplier": 10000.0},
+  "calibration": {
+    "rules": ["unit_sigma", "gaussian95", "empirical95"],
+    "sigma": "Each asset's sample standard deviation (ddof=1) of all admissible within-session 1-minute TRAIN log-mid returns, without annualisation or rolling refits",
+    "unit_sigma": "sigma_1min * sqrt(h)",
+    "gaussian95": "NormalDist().inv_cdf(0.975) * sigma_1min * sqrt(h)",
+    "empirical95": "Nearest-rank 95th percentile of absolute admissible TRAIN h-minute log-mid returns: sorted[ceil(0.95*n)-1]",
+    "freeze": "All six asset/horizon calibrations and eighteen rule bounds fixed before evaluation coverage; no evaluation fit or multiplier selection",
+    "scaling_diagnostic": "training_q95_abs_h / (training_q95_abs_1 * sqrt(h)), null if denominator zero"
+  },
+  "metrics": {
+    "coverage": "covered/n with abs(return) <= frozen bound, including equality",
+    "candidate_windows": "sessions * (390-h), before invalid-quote filtering",
+    "skipped_invalid_windows": "candidate_windows - n; counts overlapping windows, not distinct invalid minutes",
+    "exceedance": "abs(return) > frozen bound, with upward return > bound and downward return < -bound counted separately against the same eligible n",
+    "excess_sum_bps": "sum(max(abs(return)-bound,0)) * 10000",
+    "mean_excess_bps": "Unconditional positive-excess sum divided by eligible n; zero when n>0 and no exceedance, null if n=0",
+    "mean_excess_given_exceedance_bps": "Positive-excess sum divided by exceedance count, null when no exceedance",
+    "price_diagnostics": "Mean absolute return, nearest-rank q95/q99 absolute return, maximum absolute return in bps; null for empty groups"
+  },
+  "bootstrap": {
+    "method": "Noncircular moving-block bootstrap of consecutive TRADING sessions, conditional on frozen training thresholds",
+    "block_sessions": 5,
+    "resamples": 2000,
+    "seed": 100629,
+    "confidence_level": 0.95,
+    "draws": "For each draw sample ceil(N/5) block starts independently with replacement from 0,...,N-5 inclusive, concatenate five consecutive session indices per block, and truncate to N=20. Identical calendar-session indices are shared across all assets/horizons/rules.",
+    "ratio": "sum(resampled covered)/sum(resampled eligible n), preserving unequal/zero session denominators. Draws with zero total n are undefined and excluded, with valid draw count reported.",
+    "interval": "Unadjusted pointwise 95% percentile CI using type-7 linear interpolation at p*(valid_draws-1), p=0.025/0.975",
+    "scope": "Only eighteen whole-evaluation coverage cells receive intervals. Twenty evaluation sessions per asset are a small illustrative sample; no simultaneous coverage, training-threshold uncertainty or unseen-data guarantee."
+  },
+  "segments": [
+    {"name": "first_30", "origin_start": 0, "origin_stop": 30},
+    {"name": "core_330", "origin_start": 30, "origin_stop": 360},
+    {"name": "last_30", "origin_start": 360, "origin_stop": 390}
+  ],
+  "segment_scope": "Descriptive evaluation-only origin-index groups. Actual stop is min(origin_stop,390-h): last group has 30-h candidate origins per session. No refit, new rule, CI or independent-observation claim.",
+  "endpoint_quotes": {
+    "scope": "Evaluation only, same all-h+1-valid windows as returns; one cell per asset/horizon",
+    "origin_mean_halfspread_bps": "Mean[(ask_i-bid_i)/(2*mid_i)*10000] over eligible origins",
+    "old_bid_above_future_mid": "Strict bid_i > mid_(i+h)",
+    "old_ask_below_future_mid": "Strict ask_i < mid_(i+h)",
+    "old_bid_touch_or_cross_future_ask": "bid_i >= ask_(i+h), including equality",
+    "old_ask_touch_or_cross_future_bid": "ask_i <= bid_(i+h), including equality",
+    "denominator": "Each count divided by the same eligible n; touch/cross comparisons are separate and may both hold for identical locked quotes",
+    "interpretation": "Recorded historical BBO endpoint comparisons only. They are not our own orders, queue position, fills, executable stale quotes, intra-window path crossings, actual execution latency or PnL."
+  },
+  "outputs": {
+    "daily.csv": "720 asset/date/phase/horizon/rule cells with candidate/eligible/skipped counts and bound/side/excess diagnostics",
+    "summary.csv": "18 evaluation asset/horizon/rule cells and conditional session-block coverage CIs",
+    "calibration.csv": "6 train asset/horizon cells with frozen bounds, sample sigma, valid counts and square-root scaling diagnostics",
+    "session_segments.csv": "54 descriptive evaluation asset/horizon/rule/origin-segment cells, no CIs",
+    "endpoint_quotes.csv": "6 evaluation asset/horizon cells with recorded endpoint quote comparison counts/fractions and origin half-spreads",
+    "protocol.json": "Exact protocol snapshot",
+    "data_audit.json": "Loader QA, invalid quote/session counts, eighty raw-file hashes, manifests and selected calendar coverage",
+    "manifest.json": "Source/dependency/output hashes, settings, smoke overrides, calibration freeze evidence and row counts"
+  },
+  "execution": {"full_run_requires_root_instruction": true, "runtime_overrides": "Any session-count/bootstrap override or fixture injection is smoke, not the planned pilot", "source_policy": "Preserve v2-v5 files/results; fail nonempty output or source/raw-file changes; no external actions"},
+  "excluded_claims": ["market-making profitability or simulated fills", "own-order or queue execution", "actual subsecond or millisecond latency calibration", "intraminute or intrawindow extrema", "direct Avellaneda-Stoikov parameter fit", "blind/unseen evaluation", "broad stock-universe or future coverage guarantees"]
+}

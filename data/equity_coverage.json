@@ -1,0 +1,485 @@
+{
+  "publication_note": "Coverage/checksum records extracted from the earlier stock-data validation; no raw prices.",
+  "coverage": [
+    {
+      "asset": "EBAY",
+      "date": "2021-01-04",
+      "file": "EBAY_20210104.csv",
+      "sha256": "c3a46856264778799a34d8594e66fe455d4beb5a817ac10b7cd700c729c65ed3"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-05",
+      "file": "EBAY_20210105.csv",
+      "sha256": "c60d2b1c3acc3bef3fedf9a7d60a0811274ef56a20ae85b09702c6e9087b617e"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-06",
+      "file": "EBAY_20210106.csv",
+      "sha256": "7bac53f248f882541d7a623c12f63acd09df067570904b2a33e40d7558f641e7"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-07",
+      "file": "EBAY_20210107.csv",
+      "sha256": "e6911f2042ff1cff44817f8a7e36ca431a4e957f326e3d47e4a6b098a1051432"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-08",
+      "file": "EBAY_20210108.csv",
+      "sha256": "bb9a44543bd7a9660a49d6a7469986552780a6ce22304ff436cf80cae509a991"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-11",
+      "file": "EBAY_20210111.csv",
+      "sha256": "d6815e74817d67f8dfb4f63873300f4d6be047a1a5de03ab02a28bb93c0f3f5e"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-12",
+      "file": "EBAY_20210112.csv",
+      "sha256": "8fe807487812e44c1fbe44052b77f51f9e1fc0df56780fb0167df104fcbc3128"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-13",
+      "file": "EBAY_20210113.csv",
+      "sha256": "5397a076aa83e10541cc3c301637bfd98de035a504c782d809af8dc88bbd11af"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-14",
+      "file": "EBAY_20210114.csv",
+      "sha256": "1bf0bcb6a4b49dc3d2122917cb235926114c5d35e65a367cd14261653d0c3903"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-15",
+      "file": "EBAY_20210115.csv",
+      "sha256": "21b9f3ef3f14e9aa132d8bd326af46a99f97b77f9b89f8021169dbf80b6a298c"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-19",
+      "file": "EBAY_20210119.csv",
+      "sha256": "fd9949bcf9cbd8cf2d3194222c7431f0c383f01c942ed1e5e4b84718bb542bd0"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-20",
+      "file": "EBAY_20210120.csv",
+      "sha256": "8958ece8aa2d664576c3ac58a40a6a78f829574c213d594a4db8eaf0e947ed2a"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-21",
+      "file": "EBAY_20210121.csv",
+      "sha256": "2045b199bd292a7081558198690a29b5e7143937f18c26268cfd876a69f4da0e"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-22",
+      "file": "EBAY_20210122.csv",
+      "sha256": "34a3350a2b83858e12d2b34c56635da84ab369103fcc4f230b2120b643f6c1b8"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-25",
+      "file": "EBAY_20210125.csv",
+      "sha256": "6d3953a15352b03c026fc4c62d5955508d92613e2ccdac1fb3d0d6cb2165ccc0"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-26",
+      "file": "EBAY_20210126.csv",
+      "sha256": "72fdbc56242002247de9321f01a1fd120fd9a7823090bf30aa17ed78c165daf7"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-27",
+      "file": "EBAY_20210127.csv",
+      "sha256": "75a441489200e540bc71a5115eba387fcde258a3ac96bf4faac790a2dcd1f072"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-28",
+      "file": "EBAY_20210128.csv",
+      "sha256": "830eff7d6642d7852e2732513d35a06a05bf1043d4490318c476939b505a5b29"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-01-29",
+      "file": "EBAY_20210129.csv",
+      "sha256": "8ff3f0876fca2bc032aec01ac92797de7f2e2c0d0db05229051bae50094827b8"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-01",
+      "file": "EBAY_20210201.csv",
+      "sha256": "c1f79a2293ba03a51300ef019a7cf483c2caa9a640762727df105ee5a13e0dbe"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-02",
+      "file": "EBAY_20210202.csv",
+      "sha256": "0490bf60f15a17c7e10b5949dc037dd607b7b29184b582e8598e819188b48e5e"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-03",
+      "file": "EBAY_20210203.csv",
+      "sha256": "9ceeae5312dd4cb2338c72cdee8519360f67147fb01e2d173dae25661f54ff6d"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-04",
+      "file": "EBAY_20210204.csv",
+      "sha256": "41ddc327a10c5d89161579bd05c094b11f21927815dae296a1b3216e60dddec3"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-05",
+      "file": "EBAY_20210205.csv",
+      "sha256": "1be499cabbb97d9f9d435339e98d7b303f11615126edee9a9c900c5877a3f8e0"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-08",
+      "file": "EBAY_20210208.csv",
+      "sha256": "5516a6ac5e3ad547ab70339337aaf68dd8723981b0cfb698b5c7e2702debc131"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-09",
+      "file": "EBAY_20210209.csv",
+      "sha256": "e561fcda2c1de288a21764bcb5a2631921f2d874207d97620eee34b2c31adc1e"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-10",
+      "file": "EBAY_20210210.csv",
+      "sha256": "3fdd7d2b5b71b96af0ab9d6db2221bbe49ba81c8dc0465d86623c8a1cb8ccaff"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-11",
+      "file": "EBAY_20210211.csv",
+      "sha256": "351164e343d7e4cb429ec3afbf489b1764b8a82a9a8a10b30e148e05da6b170b"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-12",
+      "file": "EBAY_20210212.csv",
+      "sha256": "d03051342920d7e64a80c975056f7f5c5d57632bc8c17c272f4c69df665583a0"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-16",
+      "file": "EBAY_20210216.csv",
+      "sha256": "8d2471987ab6cd0c076d6c714d26efa6ef6ed01a151bf562ba4dd247dff84668"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-17",
+      "file": "EBAY_20210217.csv",
+      "sha256": "3f690ad6772e8fcd96276cf823f66438d22f4299de0342fcb8888607e2d1db00"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-18",
+      "file": "EBAY_20210218.csv",
+      "sha256": "90f2a21f28d3552bf5d318ca8d74311b9c604ab91b892dc33d0a6540d3153bdf"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-19",
+      "file": "EBAY_20210219.csv",
+      "sha256": "7eb8d2052cd0dd3127b3200bd30322917b5b1981dade18778c74a0bf6d958bff"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-22",
+      "file": "EBAY_20210222.csv",
+      "sha256": "20fda847c92f7b68188fbae69bed26c65768af680bd6bb84362b34321b7683da"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-23",
+      "file": "EBAY_20210223.csv",
+      "sha256": "41433fa0dd2a8172887969b2a69df407bc419f384e8012c9557947f0bc023a8b"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-24",
+      "file": "EBAY_20210224.csv",
+      "sha256": "832263519454c701132ca1b264f217463f26f00a28548f06c762755057b4a580"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-25",
+      "file": "EBAY_20210225.csv",
+      "sha256": "0258794c6d2a7258b3a6a1b3149d5021c2ec81dba0454616a01ac2f2405fdcec"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-02-26",
+      "file": "EBAY_20210226.csv",
+      "sha256": "d8285aa1e37e20d8095c1f37a2333ab183f2d2377b491b148862dce081771d99"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-03-01",
+      "file": "EBAY_20210301.csv",
+      "sha256": "d16a3a5b0953a1622c5a908094bb07c2ef228b342cb4eff1197c664695c19d3c"
+    },
+    {
+      "asset": "EBAY",
+      "date": "2021-03-02",
+      "file": "EBAY_20210302.csv",
+      "sha256": "9647cb59ebb4095b586b6a2750034ba473e3c39b3bd27bb3ca9edd9ea9418664"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-04",
+      "file": "LULU_20210104.csv",
+      "sha256": "a2ba1bcf18e5ec2bc8189610fc3f95d702e16a248d0002090b24a54bf8a6a506"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-05",
+      "file": "LULU_20210105.csv",
+      "sha256": "9a6db8e7a286960e08a0b8924f624e170966038be648fd502e3845580421f73c"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-06",
+      "file": "LULU_20210106.csv",
+      "sha256": "d7e57b89ccf05b77e68967b46bba8f1eb46b69087a8b62221cb41cedc4bbe704"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-07",
+      "file": "LULU_20210107.csv",
+      "sha256": "a23561477e7ff30a0ac39730fd1a0a9151867a6e26bd7e0c2dd90c613ae72e86"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-08",
+      "file": "LULU_20210108.csv",
+      "sha256": "6ae64698b6837dafbcc71974f505c910cb145eaa0798fc0f81b131bf8da73b8d"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-11",
+      "file": "LULU_20210111.csv",
+      "sha256": "1894883fd08dfc089df79308a154e9232f46bbf0cd5c8ddb9d9e29474318a20e"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-12",
+      "file": "LULU_20210112.csv",
+      "sha256": "4aa2cee0bda4016785dddc47c9f7e1da72a337239d70af81ed0606e4042f371f"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-13",
+      "file": "LULU_20210113.csv",
+      "sha256": "ad1ce3b2088e2035b692ea371a4545bf5a4ec2cff4161409d70e879eeb2e451d"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-14",
+      "file": "LULU_20210114.csv",
+      "sha256": "3dd733fdf33225227b70fecd3eaad96294af895323f03b2fb02a579f7fe7c568"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-15",
+      "file": "LULU_20210115.csv",
+      "sha256": "f62b970066e7e0f560439dcf42ef329ed1b572f33e4a28684f6e64abc9654718"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-19",
+      "file": "LULU_20210119.csv",
+      "sha256": "ccd6fd069b1b3be9b4d6d1313d8d59a546fe3eec501fc71af49fcf9c9ea7bf90"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-20",
+      "file": "LULU_20210120.csv",
+      "sha256": "7a0c54dc3a00757bae4b4ff91968f229e8aa00b89a17bdf3e04be4c4a43674a4"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-21",
+      "file": "LULU_20210121.csv",
+      "sha256": "29816a62014a3f2132a101ae1466eb529ad382aff7913f3fa21c28981567bd04"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-22",
+      "file": "LULU_20210122.csv",
+      "sha256": "670e26e863409f71770b1aaca433a7d673114b78073ffba3465ab20abc7d342d"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-25",
+      "file": "LULU_20210125.csv",
+      "sha256": "d16fcbada45fe745d302a2bd2e411bede5daf88fba1a5c391a705b31e6e7ee5e"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-26",
+      "file": "LULU_20210126.csv",
+      "sha256": "cee1b198aeff2ab5016219829edd194f23b82f51d7e6fcb531cd007a728cdb82"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-27",
+      "file": "LULU_20210127.csv",
+      "sha256": "72f3d817b6179c6aa44744e58e9f0474299b532d8a77d60bd26d4259ce3445c9"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-28",
+      "file": "LULU_20210128.csv",
+      "sha256": "3494b5408881afa3330c0a568da449aaec9e32613af06d4996a6690cd1f8f0f0"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-01-29",
+      "file": "LULU_20210129.csv",
+      "sha256": "4ec82f7d421f899f9916f55f2193680fdc387eab020aa941b3de7258f03196a7"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-01",
+      "file": "LULU_20210201.csv",
+      "sha256": "507dc7a9c4f37719d42d7893cbcd7cfb0a2e2cf2f77b25c814ae4d0e6a76519e"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-02",
+      "file": "LULU_20210202.csv",
+      "sha256": "65ab319e51d7357728c19e144ea3917052e07e3342c502a608cb778cdd80c205"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-03",
+      "file": "LULU_20210203.csv",
+      "sha256": "3e6325cf6d04b0c3d41954fda1e9288f9138390b75dde360b253087830773c83"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-04",
+      "file": "LULU_20210204.csv",
+      "sha256": "7da37a8306a94c8fcce09ce7df6bc3b9dd02cae311d479203995db0326074d5a"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-05",
+      "file": "LULU_20210205.csv",
+      "sha256": "ca2470759c9b06598696f996666813a542725f733d872cbebadea94eeb57a60b"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-08",
+      "file": "LULU_20210208.csv",
+      "sha256": "2d307dd1a3b6e5d015e404e3228cbc53808076e50ed4193ae9ac2f835e668385"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-09",
+      "file": "LULU_20210209.csv",
+      "sha256": "686cfc9b8b08774c6d94c860e94b8d775eb5977c904168e040c366b83adfbdbf"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-10",
+      "file": "LULU_20210210.csv",
+      "sha256": "ad7c54d59d1cf39ebaf3ba992c6d71a39ea5aecd03f4fc005f37985bf469810e"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-11",
+      "file": "LULU_20210211.csv",
+      "sha256": "f54ac06b8032f4e4faba6281f17aa11f8491eee4d5d0af1186dab08bc2868093"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-12",
+      "file": "LULU_20210212.csv",
+      "sha256": "d4475ad61b24286dfe74466e9624f0a13edb856ba31552d5099b9ea65503e7b7"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-16",
+      "file": "LULU_20210216.csv",
+      "sha256": "1591daaa1bf860c05c93c7beaeb7b389cd2d92abee7755fc37bf666c448ea9d2"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-17",
+      "file": "LULU_20210217.csv",
+      "sha256": "b0c89d99b27e508fd9b029f49966a99d32a58ddc1aa72b66cf5cb5daf4bd92f1"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-18",
+      "file": "LULU_20210218.csv",
+      "sha256": "170a08c22553684a48c19366808f640ea2a68d01d3c74d45538fb9b7295ced4f"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-19",
+      "file": "LULU_20210219.csv",
+      "sha256": "3dc677096449d1fca8e60da4eabbb75bc0523875637e2b9a5d81721dc2059e3a"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-22",
+      "file": "LULU_20210222.csv",
+      "sha256": "bcb694c3f82f607658ce1d8a923f4081d6d1a2962e001c67d9cfd38fbef6cf77"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-23",
+      "file": "LULU_20210223.csv",
+      "sha256": "16909393fb446aae00317b25ccebcc1dfa5cebe1d5065b526300f8d935f0a428"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-24",
+      "file": "LULU_20210224.csv",
+      "sha256": "cc085961d8e59ff99d9ee59a1caac376df521120abbe2d51781ce04755cda3a2"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-25",
+      "file": "LULU_20210225.csv",
+      "sha256": "f76cae94f2b997083ee71e5dc0b41e23d9dd17e526a3a5dcc49d22daf8c162c0"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-02-26",
+      "file": "LULU_20210226.csv",
+      "sha256": "ad26158acf0abe6227af02d23630dfbd93a1fff8556c131da66b8795a3fd35b1"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-03-01",
+      "file": "LULU_20210301.csv",
+      "sha256": "4847deb741df4992818c345929067c0c5b5ccefc92ec6f8c459413038957059c"
+    },
+    {
+      "asset": "LULU",
+      "date": "2021-03-02",
+      "file": "LULU_20210302.csv",
+      "sha256": "f911dabeea1e29568165b935e1cac4744d6c689b2ec80c87b6bcf30dbfb9d68c"
+    }
+  ]
+}

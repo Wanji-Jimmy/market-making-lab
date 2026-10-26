@@ -1,0 +1,96 @@
+{
+  "protocol_id": "market-making-minute-price-risk-v5-2026-10-26",
+  "schema_version": 1,
+  "design_status": "frozen_before_first_full_empirical_execution",
+  "purpose": "Measure how fixed training-calibrated minute-scale log-price bounds cover later realised close-to-close price moves. This is an empirical price-risk diagnostic, not a market-making PnL or fill backtest.",
+  "prior_information": "These historical BTC/ETH archives were already used in a separate execution-timing project. The split is chronological, but neither the raw data nor the evaluation period is claimed unseen or blind. No new outcome is used to select these rules, horizons, confidence level, or bootstrap settings.",
+  "assets": ["BTCUSDT", "ETHUSDT"],
+  "data": {
+    "provider": "Binance public monthly spot 1-minute kline archives, existing local cache only",
+    "months": ["2026-06", "2026-07", "2026-08", "2026-09"],
+    "timezone": "UTC",
+    "required_minutes_per_day": 1440,
+    "price_field": "positive finite close",
+    "network_access": false,
+    "missing_day_policy": "Require every selected asset/date key exactly once and a complete UTC day. Do not silently impute or treat incomplete days as no move.",
+    "archive_policy": "Raw archives remain in the original execution_timing_lab cache. The data loader records archive hashes, source URLs, manifest provenance and row-level QA; this project does not redownload or copy the archives."
+  },
+  "split": {
+    "training_start": "2026-06-01",
+    "training_end": "2026-07-31",
+    "evaluation_start": "2026-08-01",
+    "evaluation_end": "2026-09-30",
+    "training_days": 61,
+    "evaluation_days": 61
+  },
+  "horizons_minutes": [1, 3, 10],
+  "returns": {
+    "definition": "r(d,i,h) = log(C[d,i+h] / C[d,i]); i = 0,...,1440-h-1 within each complete UTC day",
+    "cross_day": false,
+    "overlapping_windows": true,
+    "basis_points_multiplier": 10000.0,
+    "interpretation": "Signed minute-close log returns; not exact executable prices, realised tick-path extrema, intraminute excursions, exchange latency or order-book observations."
+  },
+  "calibration": {
+    "sigma_definition": "Sample standard deviation (ddof=1) of all within-day 1-minute training log returns for each asset, without annualisation or rolling refits",
+    "coverage_probability": 0.95,
+    "empirical_quantile": "Nearest rank of absolute training returns: sorted_values[ceil(0.95*n)-1] independently for each horizon",
+    "gaussian_multiplier": "NormalDist().inv_cdf(0.975)",
+    "rules": ["unit_sigma", "gaussian95", "empirical95"],
+    "bound_definitions": {
+      "unit_sigma": "training_sigma_1min * sqrt(h)",
+      "gaussian95": "NormalDist().inv_cdf(0.975) * training_sigma_1min * sqrt(h)",
+      "empirical95": "nearest-rank 95th percentile of absolute training h-minute log returns"
+    },
+    "threshold_freeze": "Each asset/horizon/rule bound is fixed using training data only and remains unchanged on every evaluation date.",
+    "scaling_diagnostic": "training_q95_abs_h / (training_q95_abs_1 * sqrt(h)); null if the denominator is zero. This diagnoses square-root scaling, not a fitted new rule."
+  },
+  "metrics": {
+    "covered": "abs(return) <= frozen bound, including equality",
+    "exceedance": "abs(return) > frozen bound",
+    "upward_exceedance": "return > frozen bound",
+    "downward_exceedance": "return < -frozen bound",
+    "excess_sum_bps": "sum(max(abs(return)-bound,0)) * 10000",
+    "mean_excess_bps": "unconditional mean of max(abs(return)-bound,0) over all eligible returns, multiplied by 10000",
+    "mean_excess_given_exceedance_bps": "excess_sum_bps / exceedances; null when no exceedance",
+    "price_diagnostics": "n, mean absolute return, nearest-rank q95 and q99 absolute return, and maximum absolute return in bps",
+    "side_interpretation": "Upward/downward price-bound exceedances, not realised adverse selection, inventory, quoted-side fills or trading losses."
+  },
+  "bootstrap": {
+    "estimand": "Evaluation coverage conditional on the frozen training threshold",
+    "unit": "Complete UTC evaluation day with its n and covered sufficient statistics; overlapping within-day returns are never treated as independent draws",
+    "method": "Noncircular moving-block daily bootstrap",
+    "block_days": 7,
+    "resamples": 2000,
+    "seed": 100628,
+    "confidence_level": 0.95,
+    "draw_definition": "For each draw choose ceil(N/7) starts independently with replacement from 0,...,N-7 inclusive. Concatenate each start's seven consecutive day indices and truncate to N days. Use Random(100628) and the same ordered calendar-day draws across all asset/horizon/rule cells.",
+    "ratio": "sum(resampled covered counts) / sum(resampled eligible n)",
+    "interval": "Unadjusted pointwise percentile interval; linear interpolation at p*(resamples-1), p=0.025 and 0.975 (type-7 quantile)",
+    "limitations": "No training-threshold uncertainty, familywise coverage, regime stationarity, or unseen-data guarantee is asserted. Seven-day blocks cannot remove all temporal dependence."
+  },
+  "outputs": {
+    "daily.csv": "asset/date/phase/horizon_minutes/rule sufficient statistics, frozen bound and daily price diagnostics",
+    "summary.csv": "18 evaluation asset/horizon/rule cells with aggregate metrics, side exceedances, price diagnostics and conditional daily-block coverage intervals",
+    "calibration.csv": "6 training asset/horizon cells with sample 1-minute sigma, fixed bounds, nearest-rank quantiles and square-root scaling ratio",
+    "protocol.json": "Exact protocol snapshot",
+    "data_audit.json": "Original data loader QA, archive hashes and source-manifest provenance, plus selected-date coverage",
+    "manifest.json": "Source/output hashes, settings, smoke overrides, calibration freeze evidence, row counts and execution metadata"
+  },
+  "execution": {
+    "full_run_requires_root_instruction": true,
+    "runtime_overrides": "Any day-count, bootstrap block/resample/seed override or fixture data injection is labelled smoke; it cannot replace the frozen planned result.",
+    "nonempty_output": "Refuse a nonempty output directory before computation and again before writing.",
+    "source_changes": "Hash new engine/data source/tests/protocol and raw-source provenance; refuse source or raw archive changes during execution.",
+    "no_winner_selection": "Report all three fixed rules and all horizons/assets. Do not fit a multiplier, choose a policy winner, or silently replace thresholds after evaluation."
+  },
+  "excluded_claims": [
+    "market-making PnL or profitability",
+    "order-book, fill, queue or execution calibration",
+    "estimated venue fees",
+    "millisecond or subsecond latency calibration",
+    "direct parameter calibration of the synthetic Avellaneda-Stoikov policies",
+    "unseen or blind holdout performance",
+    "guaranteed 95-percent future coverage"
+  ]
+}

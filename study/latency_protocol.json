@@ -1,0 +1,99 @@
+{
+  "protocol_id": "market-making-latency-v3-2026-10-25",
+  "schema_version": 1,
+  "design_status": "frozen_before_first_full_latency_execution",
+  "parent_protocol_sha256": "cc9e5317a97ae4c379653476d2715e524bbc483f94a91135f4e80aaeb2f090be",
+  "purpose": "Stress the v2 quoting controls with delayed quote replacement and a predeclared diffusion-scale width buffer, without fitting profitability.",
+  "prior_information": "This is a follow-up chosen after inspecting v2: identical-width inventory shifting reduced inventory and drawdown without establishing a liquidated-PnL improvement. The three cases and latency/buffer controls are therefore informed by v2 findings. New seed outcomes are not used to choose the following parameters.",
+  "inference_scope": "Conditional comparisons in a synthetic one-unit passive-order model; no real-market alpha, exchange calibration, optimal latency compensation, or annualised performance claim.",
+  "simulation": {
+    "runs": 500,
+    "steps": 300,
+    "seed_start": 40000,
+    "initial_mid": 100.0,
+    "generator": "market_scenarios.generate_controlled_market",
+    "pairing": "Generate one immutable tape per case and seed; every latency and policy receives that same tape. The seed, not a fill or an event row, is the independent sampling unit."
+  },
+  "latencies": [0, 1, 3],
+  "buffer_multiplier": 1.0,
+  "policies": ["fixed", "inventory", "as_symmetric", "as_inventory", "buffered_as_symmetric", "buffered_as_inventory"],
+  "config": {
+    "initial_cash": 10000.0,
+    "initial_inventory": 0,
+    "half_spread": 1.0,
+    "skew_strength": 0.1,
+    "inventory_limit": 10,
+    "fee_per_trade": 0.05,
+    "liquidation_half_spread": 1.0,
+    "tick_size": 0.01,
+    "allow_short": true
+  },
+  "risk_parameters": {
+    "risk_aversion": 0.0005,
+    "volatility": 1.2,
+    "arrival_decay": 0.6666666666666666
+  },
+  "scenario_defaults": {
+    "volatility": 1.2,
+    "drift": 0.0,
+    "arrival_probability": 0.8,
+    "buy_probability": 0.5,
+    "urgency_scale": 1.5,
+    "informed_fraction": 0.0,
+    "jump_probability": 0.0,
+    "jump_size": 0.0,
+    "demand_model": "exponential"
+  },
+  "cases": [
+    {"name": "balanced", "scenario_overrides": {}, "config_overrides": {}},
+    {"name": "informed_75", "scenario_overrides": {"informed_fraction": 0.75}, "config_overrides": {}},
+    {"name": "flow_and_drift", "scenario_overrides": {"buy_probability": 0.25, "drift": -0.06}, "config_overrides": {}}
+  ],
+  "model_assumptions": {
+    "time_unit": "Latency is measured in event-row steps, not milliseconds or clock time. Event.step labels do not control the delay.",
+    "warm_start": "A two-sided one-unit pair based on the initial mid and inventory is already live at row zero; this is recorded separately from subsequent request activations.",
+    "atomic_cancel_replace": "Each row requests a complete replacement pair. After L event rows, both old sides are cancelled and the stored new pair becomes live atomically. Until activation, the old pair can fill. This deliberately combines order-entry and cancellation timing rather than modelling separate exchange feeds.",
+    "one_unit_per_side": "A filled bid or ask remains depleted until actual replacement. Each pair-and-side order ID can fill at most once. Pipeline requests continue every event, so after warm-up a replacement arrives each event regardless of previous fills.",
+    "event_order": "Activate due requests, request a pair from current mid and pre-trade inventory, activate that request immediately if L=0, process the single exogenous customer, then mark inventory to next mid. Pending terminal requests are not activated early.",
+    "hard_pretrade_gate": "Current cash and inventory caps veto an otherwise acceptable fill immediately. A rejected fill leaves its order side live. This is a simplifying hard pre-trade gate, not an exchange order-reservation or delayed risk-control model.",
+    "buffer": "The buffered AS policies add multiplier * sigma * sqrt(L), multiplier fixed at 1.0, to the raw requested AS half-width before tick construction. This is a predeclared diffusion-scale heuristic, not a fitted or optimal spread. Widening may also relax the inventory-shift clipping constraint, so buffered versus unbuffered inventory quoting is not a pure width-only ablation with a fixed executed shift.",
+    "width_controls": "AS symmetric/inventory and buffered-AS symmetric/inventory each match total requested and active tick width at every event. Width matching does not imply identical live sides, fill opportunities, or fills after inventory paths and depletion diverge.",
+    "age_metrics": "Information age is current model row minus the quote's information row. Resting age is current model row minus activation row. Fill-age summaries pool age sums over total fills; never average per-path fill-age means.",
+    "edge": "Negative edge means maker quantity times current mid minus execution price is negative, before fees. Markout includes future price revaluation and is a distinct diagnostic."
+  },
+  "within_latency_contrasts": [
+    {"name": "as_inventory_minus_as_symmetric", "left": "as_inventory", "right": "as_symmetric"},
+    {"name": "buffered_as_inventory_minus_as_inventory", "left": "buffered_as_inventory", "right": "as_inventory"},
+    {"name": "buffered_as_symmetric_minus_as_symmetric", "left": "buffered_as_symmetric", "right": "as_symmetric"},
+    {"name": "buffered_as_inventory_minus_buffered_as_symmetric", "left": "buffered_as_inventory", "right": "buffered_as_symmetric"}
+  ],
+  "delay_contrasts": {"reference_latency": 0, "comparison_latencies": [1, 3], "direction": "delayed minus zero latency, separately for each policy"},
+  "analysis": {
+    "primary_metric": "pnl_liquidated",
+    "paired_metrics": ["pnl_liquidated", "max_drawdown", "trades", "negative_edge_fills"],
+    "paired_resamples": 2000,
+    "markout_resamples": 1000,
+    "bootstrap_seed": 90573,
+    "confidence_level": 0.95,
+    "ci_method": "percentile path bootstrap, unadjusted pointwise intervals",
+    "markout_horizons": [1, 5],
+    "markout_estimand": "Pooled maker-signed future mid-price move per eligible fill, excluding quote edge. Horizon h runs from pre-fill mid through the mid after h event rows. Fills without the entire horizon are censored rather than extrapolated.",
+    "dependence": "Paired contrasts resample whole paired path differences. Pooled markouts resample complete paths, retaining zero-fill paths and within-path fill dependence.",
+    "paired_win_fraction": "Observed fraction of path differences strictly above zero; descriptive, not a p-value or posterior probability.",
+    "multiplicity": "Unadjusted pointwise 95% intervals; do not make familywise-significance claims.",
+    "empty_samples": "No eligible fills gives null markout/age means rather than invented zeros.",
+    "run_classification": "Only the exact frozen settings are the planned follow-up simulation. Any runtime run/step/seed/bootstrap override is explicitly labelled smoke and cannot replace the planned result.",
+    "parameter_selection": "No new parameter search, policy selection, ML, real-market calibration, or post-outcome heuristic adjustment. Future changes require another version and seed plan."
+  },
+  "validation": [
+    "Reject duplicate or missing case/latency/seed/policy keys.",
+    "Audit every cash ledger and PnL decomposition through the frozen read-only research.validate_path function.",
+    "Reject duplicate filled_order_id values within each path and check age totals against fill rows.",
+    "Compare all core zero-latency metrics and trace fields exactly with frozen v2 simulate; buffered zero-latency policies recover their corresponding AS policy.",
+    "Check active and requested AS pair widths, including buffered pairs, at every event.",
+    "Check pooled fill ages use summed age numerators divided by total trades.",
+    "Retain first-seed traces for all 54 case/latency/policy combinations, selected before outcomes.",
+    "Hash all source dependencies, protocol and outputs; reject source changes during execution and refuse nonempty output directories."
+  ],
+  "excluded_features": ["queue position", "FIFO exchange matching", "partial fills", "independent cancel and order-entry feeds", "market impact", "real-time operation", "live orders"]
+}

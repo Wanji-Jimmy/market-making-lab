@@ -11,7 +11,6 @@ def make_lesson():
         allow_short=False,
     )
 
-    # Event: 步数、当前参考价、下一步参考价、客户方向、客户限价。
     events = [
         Event(1, 100.0, 100.0, "buy", 100.9),
         Event(2, 100.0, 100.0, "sell", 99.1),
@@ -21,7 +20,7 @@ def make_lesson():
     ]
     result = simulate(events, config, "inventory", record=True)
     return {
-        "title": "五笔事件：成交赚到差价，库存下跌仍可能令账户亏损",
+        "title": "Five events: spread capture can be outweighed by inventory losses",
         "initial_cash": config.initial_cash,
         "initial_inventory": config.initial_inventory,
         "initial_mid": events[0].mid_price,
@@ -35,8 +34,8 @@ def make_lesson():
 if __name__ == "__main__":
     lesson = make_lesson()
     print(lesson["title"])
-    print("初始现金 1000.00；初始库存 2；初始总价值 1200.00；无手续费。")
-    print("step  客户    买价    卖价  成交      现金  库存   新参考价      总价值    盈亏")
+    print("Initial cash 1000.00; inventory 2; total value 1200.00; no trade fees.")
+    print("step  side     bid     ask   fill      cash   inv   next mid      equity     P&L")
     for row in lesson["trace"]:
         side = row["customer_side"] or "none"
         print(
@@ -46,7 +45,7 @@ if __name__ == "__main__":
             f'  {row["equity"]:>10.2f}  {row["pnl"]:>6.2f}'
         )
     metrics = lesson["metrics"]
-    print(f'成交优势合计：{metrics["spread_capture"]:.2f}')
-    print(f'库存价格变化损益：{metrics["inventory_pnl"]:.2f}')
-    print(f'按参考价估值盈亏：{metrics["pnl_mtm"]:.2f}')
-    print(f'计入期末清仓成本后的盈亏：{metrics["pnl_liquidated"]:.2f}')
+    print(f'Spread capture: {metrics["spread_capture"]:.2f}')
+    print(f'Inventory P&L: {metrics["inventory_pnl"]:.2f}')
+    print(f'Mark-to-market P&L: {metrics["pnl_mtm"]:.2f}')
+    print(f'P&L after terminal liquidation costs: {metrics["pnl_liquidated"]:.2f}')

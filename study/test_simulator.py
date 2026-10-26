@@ -224,7 +224,7 @@ class AccountingTests(unittest.TestCase):
 
 class MarketAndValidationTests(unittest.TestCase):
     def test_same_seed_recreates_the_same_environment(self):
-        scenario = Scenario(name="test", label="测试", steps=50,
+        scenario = Scenario(name="test", label="Test", steps=50,
                             informed_fraction=0.2, jump_probability=0.1,
                             jump_size=1)
         first = generate_market(scenario, 17)
@@ -232,7 +232,7 @@ class MarketAndValidationTests(unittest.TestCase):
         self.assertNotEqual(first, generate_market(scenario, 18))
 
     def test_strategies_do_not_modify_shared_external_events(self):
-        events = generate_market(Scenario(name="test", label="测试", steps=40), 9)
+        events = generate_market(Scenario(name="test", label="Test", steps=40), 9)
         original = copy.deepcopy(events)
         config = Config()
         first = simulate(events, config, "fixed")
@@ -298,7 +298,7 @@ class MarketAndValidationTests(unittest.TestCase):
                  dict(demand_model="magic")]
         for arguments in cases:
             with self.subTest(arguments=arguments), self.assertRaises(ValueError):
-                Scenario(name="bad", label="无效参数", **arguments)
+                Scenario(name="bad", label="Invalid parameters", **arguments)
 
     def test_broken_price_continuity_is_rejected(self):
         events = [Event(1, 100, 101, "buy", 90),

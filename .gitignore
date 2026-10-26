@@ -1,13 +1,10 @@
 __pycache__/
 *.py[cod]
 .venv/
-venv/
 .DS_Store
 .env
 .env.*
 *.pem
 *.key
-credentials*.json
-token*.json
-archive/
-research_upgrade/
+data/equities/
+study/research_results/

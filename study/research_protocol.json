@@ -1,0 +1,182 @@
+{
+  "protocol_id": "market-making-v2-2026-10-25",
+  "schema_version": 1,
+  "design_status": "frozen_before_v2_confirmatory_simulation",
+  "purpose": "Explain inventory control, spread width and adverse selection in a transparent synthetic market; do not tune for profitable results.",
+  "prior_information": "Legacy experiment.py and results.csv already exist. They are not v2 outcomes and are not overwritten. The following scenarios, parameters, contrasts and seed range are fixed before running v2.",
+  "inference_scope": "Conditional Monte Carlo comparisons inside eight toy environments, not evidence of real-market alpha, trading profitability or calibrated optimality.",
+  "simulation": {
+    "runs": 500,
+    "steps": 300,
+    "seed_start": 20000,
+    "initial_mid": 100.0,
+    "generator": "market_scenarios.generate_controlled_market",
+    "streams": [
+      "price",
+      "arrival",
+      "side",
+      "urgency",
+      "information"
+    ],
+    "pairing": "Every policy sees the identical immutable event sequence for each case and seed. Cases with matching price parameters share the same exogenous price path. Each seed is the independent sampling unit."
+  },
+  "config": {
+    "initial_cash": 10000.0,
+    "initial_inventory": 0,
+    "half_spread": 1.0,
+    "skew_strength": 0.1,
+    "inventory_limit": 10,
+    "fee_per_trade": 0.05,
+    "liquidation_half_spread": 1.0,
+    "tick_size": 0.01,
+    "allow_short": true
+  },
+  "risk_parameters": {
+    "risk_aversion": 0.0005,
+    "volatility": 1.2,
+    "arrival_decay": 0.6666666666666666
+  },
+  "scenario_defaults": {
+    "volatility": 1.2,
+    "drift": 0.0,
+    "arrival_probability": 0.8,
+    "buy_probability": 0.5,
+    "urgency_scale": 1.5,
+    "informed_fraction": 0.0,
+    "jump_probability": 0.0,
+    "jump_size": 0.0,
+    "demand_model": "exponential"
+  },
+  "cases": [
+    {
+      "name": "balanced",
+      "scenario_overrides": {},
+      "config_overrides": {}
+    },
+    {
+      "name": "flow_only",
+      "scenario_overrides": {
+        "buy_probability": 0.25
+      },
+      "config_overrides": {}
+    },
+    {
+      "name": "drift_only",
+      "scenario_overrides": {
+        "drift": -0.06
+      },
+      "config_overrides": {}
+    },
+    {
+      "name": "flow_and_drift",
+      "scenario_overrides": {
+        "buy_probability": 0.25,
+        "drift": -0.06
+      },
+      "config_overrides": {}
+    },
+    {
+      "name": "informed_25",
+      "scenario_overrides": {
+        "informed_fraction": 0.25
+      },
+      "config_overrides": {}
+    },
+    {
+      "name": "informed_75",
+      "scenario_overrides": {
+        "informed_fraction": 0.75
+      },
+      "config_overrides": {}
+    },
+    {
+      "name": "fee_stress",
+      "scenario_overrides": {},
+      "config_overrides": {
+        "fee_per_trade": 1.1
+      }
+    },
+    {
+      "name": "uniform_demand",
+      "scenario_overrides": {
+        "demand_model": "uniform"
+      },
+      "config_overrides": {}
+    }
+  ],
+  "policies": [
+    "fixed",
+    "inventory",
+    "as_symmetric",
+    "as_inventory"
+  ],
+  "policy_controls": "AS-inspired symmetric and inventory policies have an identical time-varying total tick width on every step; only the inventory shift differs. Neither is represented as a calibrated Avellaneda-Stoikov optimum. The half-width is rounded outward to ticks so total width is even; at on-tick mid prices the symmetric control has no half-tick centre bias. Both quotes are constrained to straddle the reference mid, so these remain constrained AS-inspired rules.",
+  "contrasts": [
+    {
+      "name": "inventory_minus_fixed",
+      "left": "inventory",
+      "right": "fixed"
+    },
+    {
+      "name": "as_inventory_minus_as_symmetric",
+      "left": "as_inventory",
+      "right": "as_symmetric"
+    },
+    {
+      "name": "as_symmetric_minus_fixed",
+      "left": "as_symmetric",
+      "right": "fixed"
+    },
+    {
+      "name": "as_inventory_minus_inventory",
+      "left": "as_inventory",
+      "right": "inventory"
+    }
+  ],
+  "analysis": {
+    "primary_metric": "pnl_liquidated",
+    "paired_metrics": [
+      "pnl_liquidated",
+      "max_drawdown",
+      "trades",
+      "mean_abs_inventory",
+      "max_abs_inventory"
+    ],
+    "paired_resamples": 2000,
+    "markout_resamples": 1000,
+    "bootstrap_seed": 80573,
+    "confidence_level": 0.95,
+    "ci_method": "percentile path bootstrap, unadjusted pointwise intervals",
+    "markout_horizons": [
+      1,
+      5,
+      20
+    ],
+    "markout_estimand": "Pooled maker-signed future mid-price move per eligible fill; quote edge is excluded. Horizon h is measured from pre-trade mid to the mid after h events. End-of-path fills without the full horizon are censored, never extrapolated.",
+    "dependence": "Resample complete paths, retaining fills within each path together. Cross-policy comparisons use paired paths. No IID-fill standard errors.",
+    "paired_win_fraction": "Observed fraction of paired path differences strictly above zero; descriptive, not a p-value or posterior probability.",
+    "multiplicity": "No multiple-comparison adjustment; inspect effect sizes and Monte Carlo uncertainty without claims of familywise significance.",
+    "empty_samples": "Zero eligible fills give a count of zero and null means/intervals, never a fabricated zero markout.",
+    "run_classification": "Only the exact frozen run/step/seed/bootstrap settings count as the planned confirmatory simulation. Overrides are explicitly exploratory or smoke runs.",
+    "parameter_selection": "No parameter search, holdout selection, machine learning, market-data calibration, or post-outcome policy adjustment. Any future changes require a new version and seed plan."
+  },
+  "validation": [
+    "Reject duplicate or missing case/seed/policy keys before aggregation.",
+    "Independently reconstruct cash, inventory and marked wealth from every trace.",
+    "Reconcile terminal liquidated PnL with spread capture plus inventory carry plus fill revaluation less trade fees and liquidation costs.",
+    "Check each path's inventory PnL equals inventory carry plus fill revaluation.",
+    "Check actual per-step AS pair quote widths agree to numerical tolerance; do not require equal fills.",
+    "Save the first planned seed trace for every case and policy, with selection independent of outcomes.",
+    "Hash source and output files; refuse source changes during a run and refuse overwriting a nonempty output directory."
+  ],
+  "excluded_features": [
+    "queue position",
+    "partial fills",
+    "latency",
+    "market impact",
+    "multi-asset hedging",
+    "real-time operation",
+    "dashboard",
+    "live orders"
+  ]
+}
